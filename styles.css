@@ -21,7 +21,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height:100vh;
+    height: 100vh;
     backdrop-filter: brightness(0.6);
     padding: 2rem;
   }
@@ -59,4 +59,87 @@
     background-color: white;
     color: black;
   }
+  
+  
+  /* REGISTER */
+  
+  section {
+    text-align: center;
+    /* background: rgba(0, 0, 0, 0.6); */
+    padding: 40px;
+    border-radius: 10px;
+    max-width: 400px;
+    margin: auto;
+    margin-top: 5rem;
+  }
+  
+  section img {
+    width: 50px;
+    margin-bottom: 10px;
+  }
+  
+  section h2 {
+    margin: 10px 0 30px;
+    font-size: 24px;
+    letter-spacing: 2px;
+    color: #ffffff;
+  }
+  
+  form {
+    display: grid;
+    gap: 15px;
+    border-radius: 10px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+    font-weight: 500;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    padding: 10px;
+    width: 100%;
+    border-radius: 10px;
+    border: 2px solid white;
+    background: transparent;
+    color: white;
+  }
+  
+  input::placeholder {
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  fieldset {
+    border: none;
+    padding: 0;
+    margin-top: 20px;
+  }
+  
+  fieldset img {
+    width: 30px;
+    margin: 0 10px;
+    cursor: pointer;
+  }
+  
+  .button-section {
+    display: inline-flex;
+    margin-top: -40px;
+    gap: 10px; /* Optional: Adds space between buttons */
+  }
+
+  button {
+    margin-top: 0;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background: lightblue;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
   
