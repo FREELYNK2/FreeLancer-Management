@@ -8,19 +8,18 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18  # or your preferred version
+          node-version: 18
 
       - name: Install dependencies
         run: npm install
 
       - name: Run tests with coverage
-        run: npm run coverage  # Runs tests + generates coverage
+        run: npm test -- --coverage  # Explicitly generate coverage
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info  # Path to coverage file
-          flags: javascript  # Optional: Tag this upload
+          files: ./coverage/lcov.info
+          flags: javascript
