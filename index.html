@@ -1,22 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FreeLynk</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>South African Freelancers</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-  <main>
-    <img src="ProJect_logo.png" alt="FreeLynk Logo" class="logo" />
-    <h1>Welcome to FreeLynk<br>Where Talent Meets Opportunity</h1>
-    <p>Connect, collaborate, and grow<br>your business with trusted professionals.</p>
+  <div class="container">
+    <header>
+      <h1>Freelynk</h1>
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search by job title or skills (e.g. Web Designer, React)">
+        <button id="searchButton"><i class="fas fa-search"></i> Search</button>
+      </div>
+    </header>
 
-    <nav>
-      <a href="#" class="btn">Login</a>
-      <a href="Register.html" class="btn">Register</a>
-    </nav>
-  </main>
+    <main id="mainContent">
+      <section id="freelancersGrid" class="freelancers-grid"></section>
+      
+      <section id="profilePage" class="profile-page">
+        <button class="back-button" id="backButton">← Back to All Freelancers</button>
+        <div class="profile-header">
+          <img id="profileImageLarge" class="profile-image-large" src="" alt="">
+          <h2 id="profileName"></h2>
+          <p id="profileTitle" class="title"></p>
+          <p id="profileCompany" class="company"></p>
+        </div>
+        
+        <div class="profile-details">
+          <h3>About Me</h3>
+          <p id="profileBio" class="modal-bio"></p>
+          
+          <h3>Experience</h3>
+          <p id="profileExperience"></p>
+          
+          <h3>Skills</h3>
+          <div id="profileSkills" class="skills"></div>
+          
+          <h3>Rate</h3>
+          <p id="profileRate"></p>
+          
+          <h3>Location</h3>
+          <p id="profileLocation"></p>
+          
+          <a href="#" id="hireButton" class="hire-button">Hire Me</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
