@@ -13,7 +13,7 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci  # Changed from npm install for more reliable builds
         working-directory: FreeLancer-Management
 
       - name: Run tests with coverage
@@ -23,5 +23,5 @@ jobs:
       - name: Upload to Codecov
         uses: codecov/codecov-action@v3
         with:
-          files: ./FreeLancer-Management/coverage/lcov.info
+          directory: ./FreeLancer-Management/coverage  # Simpler than specifying file
           flags: javascript
