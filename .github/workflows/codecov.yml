@@ -7,13 +7,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Verify Files
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Files present:"
+          ls -la
+          echo "Checking for package.json:"
+          if [ -f "package.json" ]; then
+            echo "package.json found!"
+          else
+            echo "ERROR: package.json missing!"
+            exit 1
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install  # Runs in root directory
+        run: npm install
 
       - name: Run tests with coverage
         run: npm test -- --coverage
