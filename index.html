@@ -8,13 +8,13 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-  <div class="container">
+  <section class="container">
     <header>
       <h1>Freelynk</h1>
-      <div class="search-container">
+      <section class="search-container">
         <input type="text" id="searchInput" placeholder="Search by job title or skills (e.g. Web Designer, React)">
         <button id="searchButton"><i class="fas fa-search"></i> Search</button>
-      </div>
+      </section>
     </header>
 
     <main id="mainContent">
@@ -22,14 +22,14 @@
       
       <section id="profilePage" class="profile-page">
         <button class="back-button" id="backButton">← Back to All Freelancers</button>
-        <div class="profile-header">
+        <section class="profile-header">
           <img id="profileImageLarge" class="profile-image-large" src="" alt="">
           <h2 id="profileName"></h2>
           <p id="profileTitle" class="title"></p>
           <p id="profileCompany" class="company"></p>
-        </div>
+        </section>
         
-        <div class="profile-details">
+        <section class="profile-details">
           <h3>About Me</h3>
           <p id="profileBio" class="modal-bio"></p>
           
@@ -37,7 +37,7 @@
           <p id="profileExperience"></p>
           
           <h3>Skills</h3>
-          <div id="profileSkills" class="skills"></div>
+          <section id="profileSkills" class="skills"></section>
           
           <h3>Rate</h3>
           <p id="profileRate"></p>
@@ -46,10 +46,12 @@
           <p id="profileLocation"></p>
           
           <a href="#" id="hireButton" class="hire-button">Hire Me</a>
-        </div>
+        </section>
       </section>
     </main>
-  </div>
+
+    
+  </section>
 
   <script src="data.js"></script>
   <script src="script.js"></script>
