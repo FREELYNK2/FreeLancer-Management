@@ -6,15 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Verify directory exists
-        run: |
-          echo "Checking directory structure:"
-          ls -la
-          if [ ! -d "FreeLancer-Management" ]; then
-            echo "Error: FreeLancer-Management directory not found!"
-            exit 1
-          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -22,15 +13,13 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
-        working-directory: FreeLancer-Management  # Must match exact folder name
+        run: npm install  # Runs in root directory
 
       - name: Run tests with coverage
         run: npm test -- --coverage
-        working-directory: FreeLancer-Management
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v3
         with:
-          files: ./FreeLancer-Management/coverage/coverage-final.json
+          files: ./coverage/coverage-final.json
           flags: javascript
