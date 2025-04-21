@@ -14,12 +14,14 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: FreeLancer-Management
 
       - name: Run tests with coverage
-        run: npm test -- --coverage  # Explicitly generate coverage
+        run: npm test -- --coverage
+        working-directory: FreeLancer-Management
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v3
         with:
-          files: ./coverage/lcov.info
+          files: ./FreeLancer-Management/coverage/lcov.info
           flags: javascript
