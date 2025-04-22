@@ -1,0 +1,24 @@
+{
+  "name": "freelancer-management",
+  "version": "1.0.0",
+  "description": "Here is the Azure link\r https://nice-dune-05fc61f10.6.azurestaticapps.net",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FREELYNK2/FreeLancer-Management.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FREELYNK2/FreeLancer-Management/issues"
+  },
+  "homepage": "https://github.com/FREELYNK2/FreeLancer-Management#readme",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
