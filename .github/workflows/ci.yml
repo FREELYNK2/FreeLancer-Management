@@ -26,3 +26,9 @@ jobs:
 
       - name: Run tests
         run: npx jest --coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov-report/index.html
+          token: ${{ secrets.CODECOV_TOKEN }}  
