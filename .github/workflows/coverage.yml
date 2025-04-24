@@ -1,31 +1,37 @@
-name: Run Tests and Upload to Codecov
+name: Run Tests
 
 on:
   push:
-    branches: [ "main", "Testing" ]
+    branches: [Testing]
   pull_request:
-    branches: [ "main", "Testing" ]
+    branches: [Testing]
 
 jobs:
   test:
+    name: Run Jest Tests
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests with coverage
-        run: npm test -- --coverage
+      - name: Ensure Jest is executable
+        run: chmod +x ./node_modules/.bin/jest
 
-      - name: Upload to Codecov
+      - name: Run tests
+        run: npx jest --coverage
+
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }} # optional if your repo is public
+          file: ./coverage/lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  
