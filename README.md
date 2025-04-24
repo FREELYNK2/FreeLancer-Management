@@ -10,5 +10,5 @@ The project is organized as follows:
 - **`styles/`** - Contains all CSS files (e.g., `styles.css`)
 - **`tests/`** - Contains all JavaScript test files (e.g., `example.test.js`)
 - **`assets/`** - Contains images and other media files (e.g., `FacebookIcon.png`, `resume_6361827.png`)
-- **`Documentation/`** - Contains all project-related documents (e.g., `Wireframes.zip`, `User_Stories_SD_Project.docx`)
+- **`Documentation/`** - Contains all project-related documents (e.g., `Wireframes.zip`, `User_Stories_SD_Project.docx`.)
 
