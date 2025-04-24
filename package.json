@@ -1,7 +1,7 @@
 {
   "name": "freelancers",
   "version": "1.0.0",
-  "description": "",
+  "description": "Here is the figma link\r https://www.figma.com/proto/86u9NhBGAqjqWn2TNDn097/Registration?node-id=40-34&p=f&t=2kwkRtzRb5IzXgCP-1&scaling=contain&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=40%3A34",
   "main": "data.js",
   "dependencies": {
     "abab": "^2.0.6",
@@ -278,6 +278,17 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "jest": "^29.7.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FREELYNK2/FreeLancer-Management.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FREELYNK2/FreeLancer-Management/issues"
+  },
+  "homepage": "https://github.com/FREELYNK2/FreeLancer-Management#readme"
 }
