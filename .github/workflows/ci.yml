@@ -1,36 +1,38 @@
-name: Run Tests
+name: Node.js CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main  # Trigger action on pushes to the main branch
   pull_request:
-    branches: [main]
+    branches:
+      - main  # Trigger action on pull requests to the main branch
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-latest  # This is the operating system for the runner
+    
     steps:
-      - uses: actions/checkout@v4
+    # Step 1: Check out your code
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+    # Step 2: Set up Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '22'  # Specify the Node.js version (change to your required version)
 
-      - name: Install dependencies
-        run: npm install
+    # Step 3: Install dependencies
+    - name: Install dependencies
+      run: npm install
 
-      - name: Ensure Jest is executable
-        run: chmod +x ./node_modules/.bin/jest
+    # Step 4: Run tests
+    - name: Run tests
+      run: npm test -- --coverage  # Run your tests with coverage
 
-      - name: Run tests
-        run: npx jest --coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./coverage/lcov.info
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-  
+    # Optional: Upload test coverage results to GitHub
+    - name: Upload coverage results
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov-report/index.html
