@@ -9,7 +9,8 @@ import {
   getFirestore,
   setDoc,
   doc,
-  getDoc
+  getDoc,
+  serverTimestamp // ✅ Added to enable timestamp storage
 } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 
 // Firebase config
@@ -94,7 +95,8 @@ function handleSignUp(role) {
       const userData = {
         fullName,
         email,
-        role
+        role,
+        createdAt: serverTimestamp() // ✅ Timestamp added here
       };
 
       await setDoc(doc(db, "users", user.uid), userData);
