@@ -1,0 +1,177 @@
+/* GLOBAL STYLES */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+/* HEADER */
+header {
+  background-color: #004d99; /* Dark Blue */
+  padding: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  font-size: 1.1rem;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: #ffffff;
+  text-decoration: none;
+  margin: 0 15px;
+  font-weight: 500;
+  padding: 10px 15px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+nav a:hover {
+  background-color: #006bb3; /* Lighter Blue */
+}
+
+nav a.active {
+  background-color: #005a87; /* Active link color */
+  color: #fff;
+}
+
+/* DASHBOARD SECTION */
+.account-section {
+  max-width: 1000px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.account-section h2 {
+  font-size: 2.5rem;
+  color: #1a237e;
+  margin-bottom: 1.5rem;
+}
+
+/* LOGOUT BUTTON */
+#logout-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  float: right;
+  transition: background-color 0.3s ease;
+}
+
+#logout-btn:hover {
+  background-color: #c82333;
+}
+
+/* ACCOUNT ACTIONS */
+.account-actions {
+  margin-bottom: 2rem;
+}
+
+.account-actions h3 {
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  color: #007bff;
+}
+
+.account-actions ul {
+  list-style: none;
+  padding: 0;
+}
+
+.account-actions li {
+  margin-bottom: 10px;
+}
+
+.account-actions a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.account-actions a:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
+
+/* PENDING PROJECTS */
+.pending-projects {
+  margin-top: 2rem;
+}
+
+.pending-projects h3 {
+  font-size: 1.8rem;
+  color: #1a237e;
+  margin-bottom: 1rem;
+}
+
+#pending-projects-list {
+  list-style: none;
+  padding: 0;
+  background-color: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+#pending-projects-list li {
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+#pending-projects-list li:last-child {
+  border-bottom: none;
+}
+
+#pending-projects-list a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+#pending-projects-list a:hover {
+  text-decoration: underline;
+}
+
+/* MOBILE AND TABLET ADJUSTMENTS */
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .account-section {
+    padding: 1.5rem;
+  }
+
+  #logout-btn {
+    width: 100%;
+    margin-top: 2rem;
+  }
+
+  .account-actions ul {
+    padding-left: 20px;
+  }
+
+  .pending-projects h3 {
+    font-size: 1.5rem;
+  }
+
+  #pending-projects-list li {
+    padding: 0.5rem 0;
+  }
+}
