@@ -1,4 +1,4 @@
-const freelancers = [
+ const freelancers = [
     {
       id: 1,
       name: "Elias Baloyi",

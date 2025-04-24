@@ -1,6 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1745352195495" clover="3.2.0">
-  <project timestamp="1745352195495" name="All files">
-    <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0" elements="0" coveredelements="0" complexity="0" loc="0" ncloc="0" packages="0" files="0" classes="0"/>
+<coverage generated="1745460870879" clover="3.2.0">
+  <project timestamp="1745460870880" name="All files">
+    <metrics statements="39" coveredstatements="38" conditionals="24" coveredconditionals="16" methods="17" coveredmethods="17" elements="80" coveredelements="71" complexity="0" loc="39" ncloc="39" packages="1" files="1" classes="1"/>
+    <file name="homeInteractions.js" path="C:\Users\hi\OneDrive\Desktop\FreeLancer-Management\pages\homeInteractions.js">
+      <metrics statements="39" coveredstatements="38" conditionals="24" coveredconditionals="16" methods="17" coveredmethods="17"/>
+      <line num="3" count="1" type="stmt"/>
+      <line num="4" count="1" type="stmt"/>
+      <line num="5" count="1" type="stmt"/>
+      <line num="6" count="1" type="stmt"/>
+      <line num="7" count="1" type="cond" truecount="1" falsecount="1"/>
+      <line num="8" count="1" type="stmt"/>
+      <line num="15" count="1" type="stmt"/>
+      <line num="16" count="1" type="stmt"/>
+      <line num="17" count="1" type="stmt"/>
+      <line num="18" count="1" type="stmt"/>
+      <line num="19" count="1" type="stmt"/>
+      <line num="20" count="1" type="stmt"/>
+      <line num="21" count="1" type="stmt"/>
+      <line num="25" count="1" type="stmt"/>
+      <line num="26" count="1" type="cond" truecount="1" falsecount="1"/>
+      <line num="27" count="1" type="stmt"/>
+      <line num="28" count="1" type="stmt"/>
+      <line num="29" count="1" type="stmt"/>
+      <line num="30" count="1" type="stmt"/>
+      <line num="31" count="2" type="cond" truecount="1" falsecount="1"/>
+      <line num="32" count="2" type="cond" truecount="1" falsecount="1"/>
+      <line num="33" count="2" type="cond" truecount="4" falsecount="0"/>
+      <line num="40" count="1" type="stmt"/>
+      <line num="41" count="1" type="stmt"/>
+      <line num="42" count="1" type="cond" truecount="3" falsecount="1"/>
+      <line num="43" count="1" type="stmt"/>
+      <line num="44" count="1" type="stmt"/>
+      <line num="50" count="1" type="stmt"/>
+      <line num="51" count="1" type="stmt"/>
+      <line num="53" count="1" type="cond" truecount="3" falsecount="1"/>
+      <line num="54" count="1" type="stmt"/>
+      <line num="55" count="1" type="stmt"/>
+      <line num="56" count="1" type="stmt"/>
+      <line num="59" count="1" type="stmt"/>
+      <line num="60" count="1" type="cond" truecount="2" falsecount="2"/>
+      <line num="61" count="0" type="stmt"/>
+      <line num="65" count="1" type="stmt"/>
+      <line num="66" count="1" type="stmt"/>
+      <line num="67" count="1" type="stmt"/>
+    </file>
   </project>
 </coverage>

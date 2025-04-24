@@ -1,0 +1,72 @@
+// pages/homeInteractions.js
+export function initSmoothScroll() {
+    document.querySelectorAll('nav a[href^="#"]').forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  }
+  
+  export function showToastMessage() {
+    const toast = document.createElement('section');
+    toast.className = 'toast-message';
+    toast.textContent = 'Welcome to Freelynk!';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.style.opacity = 1, 300);
+    setTimeout(() => toast.style.opacity = 0, 4000);
+    setTimeout(() => toast.remove(), 4500);
+  }
+  
+  export function initSearchFilter() {
+    const searchInput = document.querySelector('.search-section input');
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase();
+        const serviceCards = document.querySelectorAll('.service-card');
+        serviceCards.forEach(card => {
+          const title = card.querySelector('h3')?.textContent.toLowerCase() || '';
+          const description = card.querySelector('p')?.textContent.toLowerCase() || '';
+          card.style.display = (title.includes(query) || description.includes(query)) ? 'inline-block' : 'none';
+        });
+      });
+    }
+  }
+  
+  export function initScrollToServices() {
+    const searchBtn = document.querySelector('.hero-search-btn');
+    const scrollTarget = document.querySelector('.popular-services');
+    if (searchBtn && scrollTarget) {
+      searchBtn.addEventListener('click', () => {
+        scrollTarget.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+  }
+  
+  export function initHamburgerMenu() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const menu = document.querySelector('.menu');
+  
+    if (menuToggle && menu) {
+      menuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menu.classList.toggle('show');
+      });
+  
+      document.addEventListener('click', (e) => {
+        if (!menu.contains(e.target) && !menuToggle.contains(e.target)) {
+          menu.classList.remove('show');
+        }
+      });
+  
+      menu.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+          menu.classList.remove('show');
+        });
+      });
+    }
+  }
+  

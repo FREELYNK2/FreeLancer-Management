@@ -1,11 +1,13 @@
 {
   "name": "freelancer-management",
   "version": "1.0.0",
-  "description": "Here is the Azure link\r https://nice-dune-05fc61f10.6.azurestaticapps.net",
+  "description": "Here is the Azure link\r https://nice-dune-05fc61f10.6.azurestaticapps.net\r Update: setting up Codecov integration",
   "main": "index.js",
+  "directories": {
+    "test": "jest"
+  },
   "scripts": {
-    "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -19,6 +21,10 @@
   },
   "homepage": "https://github.com/FREELYNK2/FreeLancer-Management#readme",
   "devDependencies": {
-    "jest": "^29.7.0"
+    "@babel/preset-env": "^7.26.9",
+    "@babel/preset-react": "^7.26.3",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
   }
 }

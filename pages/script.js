@@ -99,3 +99,6 @@ document.addEventListener('DOMContentLoaded', function() {
       document.querySelector('.freelancers-grid').style.display = 'grid';
     });
   });
+
+  // Exporting the functions
+//export { performSearch, displayFreelancers, showProfilePage };
