@@ -1,0 +1,61 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    color: #333;
+  }
+  
+  header {
+    margin-bottom: 2rem;
+  }
+  
+  nav a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 0.95rem;
+  }
+  
+  main section {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  h2 {
+    margin-top: 0;
+  }
+  
+  .badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.85rem;
+  }
+  
+  .in-progress {
+    background-color: #f0ad4e;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: white;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  #payment-message {
+    margin-top: 1rem;
+    font-weight: bold;
+    color: green;
+  }
+  
