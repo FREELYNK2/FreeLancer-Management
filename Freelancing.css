@@ -70,6 +70,7 @@ nav {
   text-align: center;
   margin: 60px 0;
   padding: 40px 20px;
+  background: linear-gradient(135deg, #e0f7ff, #ffffff);
 }
 
 .welcome-section button {
@@ -416,5 +417,66 @@ nav {
 
   .menu a:hover {
     color: #cde4ff;
+  }
+}
+
+/* BUTTON PULSE ANIMATION */
+.hero-search-btn {
+  padding: 18px 40px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #007BFF, #38b6ff);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4);
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-search-btn:hover {
+  background: linear-gradient(135deg, #0056b3, #007BFF);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 123, 255, 0.6);
+}
+
+.hero-search-btn {
+  animation: pulse 2.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(56, 182, 255, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(56, 182, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(56, 182, 255, 0);
+  }
+}
+
+/* WELCOME HEADING */
+.welcome-heading {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* ARROW ANIMATION */
+#animated-arrow {
+  margin: 20px 0;
+  animation: bounceArrow 1.5s infinite;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@keyframes bounceArrow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(12px);
   }
 }
