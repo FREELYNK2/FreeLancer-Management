@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/FREELYNK2/FreeLancer-Management/graph/badge.svg?token=AH4D3RWMYF)](https://codecov.io/gh/FREELYNK2/FreeLancer-Management)
+
 Here is the Azure link
 https://nice-dune-05fc61f10.6.azurestaticapps.net
 Update: setting up Codecov integration
