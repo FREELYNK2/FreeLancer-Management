@@ -5,7 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// Load the HTML file
+
 const html = fs.readFileSync(path.resolve(__dirname, '../pages/detailed_milestone.html'), 'utf8');
 
 describe('Payment Simulation Tests', () => {
