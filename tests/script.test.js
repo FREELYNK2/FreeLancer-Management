@@ -5,7 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 
-<<<<<<< HEAD
+
 // Load HTML content
 const html = fs.readFileSync(path.resolve(__dirname, '../pages/index2.html'), 'utf8');
 
@@ -588,5 +588,5 @@ describe('Freelancer Application', () => {
       }, 0);
     });
   });
->>>>>>> c6f4b627e69b692f26f3408b0ae6c4177d29e7b9
+
 });
