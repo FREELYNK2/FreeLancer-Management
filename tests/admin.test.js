@@ -90,8 +90,8 @@ describe('Admin Dashboard', () => {
   test('scripts are properly loaded', () => {
     const scripts = document.querySelectorAll('script[type="module"]');
     expect(scripts.length).toBe(2);
-    expect(scripts[0].getAttribute('src')).toBe('../pages/firebaseauth.js');
-    expect(scripts[1].getAttribute('src')).toBe('../pages/admin.js');
+    expect(scripts[0].getAttribute('src')).toBe('../firebaseauth.js');
+    expect(scripts[1].getAttribute('src')).toBe('../admin.js');
   });
 
   test.skip('logout button triggers sign out', () => {
