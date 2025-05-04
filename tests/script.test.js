@@ -298,7 +298,7 @@ describe('Helper Functions', () => {
         expect(filterExperience('5 years', '4-7')).toBe(true);
         expect(filterExperience('8 years', '4-7')).toBe(false);
     });
-=======
+
 // 1. Load your actual HTML structure
 const html = fs.readFileSync(path.resolve(__dirname, '../pages/index2.html'), 'utf8');
 
