@@ -1,16 +1,15 @@
-// Import Firebase SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
 import {
   getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithPopup,
+  GoogleAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import {
   getFirestore,
-  setDoc,
   doc,
   getDoc,
-  serverTimestamp // ✅ Added to enable timestamp storage
+  setDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 
 // Firebase config
@@ -18,156 +17,150 @@ const firebaseConfig = {
   apiKey: "AIzaSyCsf_gbE_xyqRoilwzgdDtEdGIpEDydntU",
   authDomain: "freelynk-2758c.firebaseapp.com",
   projectId: "freelynk-2758c",
-  storageBucket: "freelynk-2758c.firebasestorage.app",
+  storageBucket: "freelynk-2758c.appspot.com",
   messagingSenderId: "995824578892",
   appId: "1:995824578892:web:b5dc2dda5e160592681fe9"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
+const provider = new GoogleAuthProvider();
 
-// 🔔 Popup function
-function showPopup(message, type = "success") {
-  if (!message || typeof message !== "string") {
-    console.warn("No message provided to showPopup");
-    return;
+const adminEmails = "vhulendamashamba4@gmail.com";
+
+// Sign-In Function
+async function handleGoogleSignIn() {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    if (adminEmails.includes(user.email)) {
+      showAdminChoicePopup(user);
+    } else {
+      const userDocRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userDocRef);
+
+      if (userSnap.exists()) {
+        showPopup("Welcome back!", "success");
+        setTimeout(() => (window.location.href = "Freelancing.html"), 1500);
+      } else {
+        showRoleSelectionPopup(user);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    showPopup("Google Sign-In failed", "error");
   }
+}
 
+// Admin Dashboard or Website Popup
+function showAdminChoicePopup(user) {
+  const overlay = document.createElement("section");
+  overlay.id = "adminOverlay";
+
+  const popup = document.createElement("div");
+  popup.className = "popup-container";
+
+  const heading = document.createElement("h2");
+  heading.textContent = "Continue to:";
+  heading.className = "popup-heading";
+
+  const dashboardBtn = document.createElement("button");
+  dashboardBtn.textContent = "Dashboard";
+  dashboardBtn.className = "popup-btn";
+  dashboardBtn.onclick = () => {
+    overlay.remove();
+    showPopup("Redirecting to Admin Dashboard...", "success");
+    setTimeout(() => (window.location.href = "admin.html"), 1500);
+  };
+
+  const websiteBtn = document.createElement("button");
+  websiteBtn.textContent = "Website";
+  websiteBtn.className = "popup-btn";
+  websiteBtn.onclick = () => {
+    overlay.remove();
+    showPopup("Redirecting to Website...", "success");
+    setTimeout(() => (window.location.href = "Freelancing.html"), 1500);
+  };
+
+  popup.appendChild(heading);
+  popup.appendChild(dashboardBtn);
+  popup.appendChild(websiteBtn);
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+}
+
+// Role selection popup for new users
+function showRoleSelectionPopup(user) {
+  const overlay = document.createElement("section");
+  overlay.id = "roleOverlay";
+
+  const popup = document.createElement("div");
+  popup.className = "popup-container";
+
+  const heading = document.createElement("h2");
+  heading.textContent = "Sign in as:";
+  heading.className = "popup-heading";
+
+  const clientBtn = document.createElement("button");
+  clientBtn.textContent = "Client";
+  clientBtn.className = "popup-btn";
+  clientBtn.onclick = () => saveUserRole(user, "client");
+
+  const freelancerBtn = document.createElement("button");
+  freelancerBtn.textContent = "Freelancer";
+  freelancerBtn.className = "popup-btn";
+  freelancerBtn.onclick = () => saveUserRole(user, "freelancer");
+
+  popup.appendChild(heading);
+  popup.appendChild(clientBtn);
+  popup.appendChild(freelancerBtn);
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+}
+
+// Save user info to Firestore
+async function saveUserRole(user, role) {
+  try {
+    await setDoc(doc(db, "users", user.uid), {
+      fullName: user.displayName,
+      email: user.email,
+      role,
+      createdAt: serverTimestamp()
+    });
+
+    document.getElementById("roleOverlay")?.remove();
+    showPopup("Signed in as " + role + "!", "success");
+
+    setTimeout(() => {
+      window.location.href = "Freelancing.html";
+    }, 1500);
+  } catch (error) {
+    console.error(error);
+    showPopup("Failed to save role", "error");
+  }
+}
+
+// Simple popup message
+function showPopup(message, type = "success") {
   let popup = document.getElementById("popupMessageBox");
   if (!popup) {
-    popup = document.createElement("div");
+    popup = document.createElement("section");
     popup.id = "popupMessageBox";
-    popup.style.position = "fixed";
-    popup.style.top = "20px";
-    popup.style.right = "20px";
-    popup.style.zIndex = "9999";
-    popup.style.padding = "16px 24px";
-    popup.style.borderRadius = "8px";
-    popup.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
-    popup.style.fontFamily = "Montserrat, sans-serif";
-    popup.style.fontSize = "16px";
-    popup.style.transition = "opacity 0.3s ease";
-    popup.style.color = "#fff";
-    popup.style.maxWidth = "300px";
-    popup.style.display = "none";
-    popup.style.wordBreak = "break-word";
     document.body.appendChild(popup);
   }
 
-  popup.innerText = message;
-  popup.style.backgroundColor = type === "success" ? "#28a745" : "#dc3545";
-  popup.style.opacity = 1;
+  popup.className = type === "success" ? "success" : "error";
+  popup.textContent = message;
   popup.style.display = "block";
+  popup.style.opacity = "1";
 
   setTimeout(() => {
-    popup.style.opacity = 0;
+    popup.style.opacity = "0";
     setTimeout(() => (popup.style.display = "none"), 300);
   }, 4000);
 }
 
-// ✅ Email format validation
-function isValidEmail(email) {
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailPattern.test(email);
-}
-
-// 📝 Handle Sign Up
-function handleSignUp(role) {
-  const fullName = document.getElementById("fName")?.value.trim();
-  const email = document.getElementById("rEmail")?.value.trim();
-  const password = document.getElementById("rPassword")?.value;
-
-  if (!fullName || !email || !password) {
-    showPopup("Please fill in all fields", "error");
-    return;
-  }
-
-  if (!isValidEmail(email)) {
-    showPopup("Please enter a valid email address", "error");
-    return;
-  }
-
-  createUserWithEmailAndPassword(auth, email, password)
-    .then(async (userCredential) => {
-      const user = userCredential.user;
-      const userData = {
-        fullName,
-        email,
-        role,
-        createdAt: serverTimestamp() // ✅ Timestamp added here
-      };
-
-      await setDoc(doc(db, "users", user.uid), userData);
-
-      showPopup("Account Created Successfully!", "success");
-
-      setTimeout(() => {
-        window.location.href = "Login.html";
-      }, 1500);
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      if (errorCode === "auth/email-already-in-use") {
-        showPopup("Email already in use", "error");
-      } else if (errorCode === "auth/weak-password") {
-        showPopup("Password should be at least 6 characters", "error");
-      } else {
-        console.error(error);
-        showPopup("An error occurred while creating account", "error");
-      }
-    });
-}
-
-// 🔐 Handle Sign In
-async function handleSignIn() {
-  const emailInput = document.querySelector('input[type="email"]');
-  const passwordInput = document.querySelector('input[type="password"]');
-  const email = emailInput?.value.trim();
-  const password = passwordInput?.value;
-
-  if (!email || !password) {
-    showPopup("Please enter both email and password", "error");
-    return;
-  }
-
-  if (!isValidEmail(email)) {
-    showPopup("Invalid email format", "error");
-    return;
-  }
-
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    const docRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      showPopup("Login successful!", "success");
-      setTimeout(() => {
-        window.location.href = "Freelancing.html";
-      }, 1500);
-    } else {
-      showPopup("No account found. Redirecting to register...", "error");
-      setTimeout(() => {
-        window.location.href = "register.html";
-      }, 2500);
-    }
-  } catch (error) {
-    if (error.code === "auth/user-not-found") {
-      showPopup("No account found with this email", "error");
-    } else if (error.code === "auth/wrong-password") {
-      showPopup("Incorrect password", "error");
-    } else {
-      console.error(error);
-      showPopup("Email Or Password Is Incorrect", "error");
-    }
-  }
-}
-
-// ✅ Button Listeners
-document.getElementById("hireTalentBtn")?.addEventListener("click", () => handleSignUp("hirer"));
-document.getElementById("findWorkBtn")?.addEventListener("click", () => handleSignUp("freelancer"));
-document.getElementById("loginBtn")?.addEventListener("click", handleSignIn);
+// Bind button event
+document.getElementById("googleSignInBtn")?.addEventListener("click", handleGoogleSignIn);

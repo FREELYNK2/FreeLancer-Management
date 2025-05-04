@@ -3,58 +3,168 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>South African Freelancers</title>
-  <link rel="stylesheet" href="../styles/style.css">
-  <script type="module"src="script.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <title>Freelynk - Freelance Platform</title>
+  <link rel="stylesheet" href="../pages/styles/style.css">
 </head>
 <body>
-  <section class="container">
+  <main class="container">
     <header>
-      <h1>Freelynk</h1>
-      <section class="search-container">
-        <input type="text" id="searchInput" placeholder="Search by job title or skills (e.g. Web Designer, React)">
-        <button id="searchButton"><i class="fas fa-search"></i> Search</button>
+      <img src="../assets/newFreelynkLogo.png" alt="Freelynk Logo" class="main-logo">
+      <section class="global-search">
+        <input type="text" id="globalSearchInput" placeholder="Search jobs, freelancers, skills...">
+        <button id="globalSearchBtn">Search</button>
       </section>
+      <nav class="main-navigation">
+        <button id="homeBtn" class="active">Back</button>
+        <button id="freelancerBtn">Freelancers</button>
+        <button id="clientBtn">Clients</button>
+      </nav>
     </header>
 
-    <main id="mainContent">
-      <section id="freelancersGrid" class="freelancers-grid"></section>
-      
-      <section id="profilePage" class="profile-page">
-        <button class="back-button" id="backButton">← Back to All Freelancers</button>
-        <section class="profile-header">
-          <img id="profileImageLarge" class="profile-image-large" src="" alt="">
-          <h2 id="profileName"></h2>
-          <p id="profileTitle" class="title"></p>
-          <p id="profileCompany" class="company"></p>
-        </section>
-        
-        <section class="profile-details">
-          <h3>About Me</h3>
-          <p id="profileBio" class="modal-bio"></p>
-          
-          <h3>Experience</h3>
-          <p id="profileExperience"></p>
-          
-          <h3>Skills</h3>
-          <section id="profileSkills" class="skills"></section>
-          
-          <h3>Rate</h3>
-          <p id="profileRate"></p>
-          
-          <h3>Location</h3>
-          <p id="profileLocation"></p>
-          
-          <a href="#" id="hireButton" class="hire-button">Hire Me</a>
-        </section>
+    <section id="homeView">
+      <article>
+       
+        <menu class="action-buttons">
+          <button id="findFreelancersBtn">Find Freelancers</button>
+          <button id="postJobBtn">Post a Job</button>
+        </menu>
+      </article>
+    </section>
+
+    <section id="freelancerView" class="hidden">
+      <menu class="freelancer-options">
+        <button id="createFreelancerProfileBtn">Add Skill</button>
+        <button id="browseJobsBtn">Browse Jobs</button>
+      </menu>
+
+      <form id="freelancerProfileForm" class="hidden">
+        <h2>Your Freelancer Profile</h2>
+        <fieldset>
+          <label for="freelancerPhoto">Profile Picture</label>
+          <input type="file" id="freelancerPhoto" accept="image/*">
+          <figure id="photoPreview" class="photo-preview"></figure>
+        </fieldset>
+        <fieldset>
+          <label for="freelancerName">Full Name</label>
+          <input type="text" id="freelancerName" required>
+        </fieldset>
+        <fieldset>
+          <label for="freelancerTitle">Professional Title</label>
+          <input type="text" id="freelancerTitle" required>
+        </fieldset>
+        <fieldset>
+          <label for="freelancerSkills">Skills (comma separated)</label>
+          <input type="text" id="freelancerSkills" required>
+        </fieldset>
+        <fieldset>
+          <label for="freelancerRate">Hourly Rate (ZAR)</label>
+          <input type="number" id="freelancerRate" required>
+        </fieldset>
+        <fieldset>
+          <label for="freelancerExperience">Experience (years)</label>
+          <input type="number" id="freelancerExperience" min="0" required>
+      </fieldset>
+        <fieldset>
+          <label for="freelancerBio">Bio</label>
+          <textarea id="freelancerBio" rows="4" required></textarea>
+        </fieldset>
+        <fieldset>
+          <label for="freelancerLocation">Location</label>
+          <input type="text" id="freelancerLocation" required>
+        </fieldset>
+        <button type="submit">Save Skill</button>
+      </form>
+
+      <section id="jobSearch" class="search-section hidden">
+        <h2>Find Jobs</h2>
+        <form id="jobSearchForm">
+          <input type="text" id="jobSearchInput" placeholder="Search by job title, skills, or description">
+          <button type="submit">Search Jobs</button>
+        </form>
+        <p class="search-info">Search by job title, description, skills, budget, duration or posting date</p>
+        <menu class="filter-options">
+          <select id="jobBudgetFilter">
+            <option value="">Any Budget</option>
+            <option value="0-1000">Under R1000</option>
+            <option value="1000-5000">R1000-R5000</option>
+            <option value="5000+">R5000+</option>
+          </select>
+          <select id="jobDurationFilter">
+            <option value="">Any Duration</option>
+            <option value="1-7">1-7 days</option>
+            <option value="8-30">8-30 days</option>
+            <option value="30+">30+ days</option>
+          </select>
+        </menu>
       </section>
-    </main>
 
-    
-  </section>
+      <article id="jobListings" class="hidden">
+        <h2>Available Jobs</h2>
+        <section id="jobsContainer"></section>
+      </article>
+    </section>
 
-  <script src="data.js"></script>
-  <script type="module"src="script.js"></script>
+    <section id="clientView" class="hidden">
+      <menu class="client-options">
+        <button id="postJobFormBtn">Post a Job</button>
+        <button id="browseFreelancersBtn">Browse Freelancers</button>
+      </menu>
+
+      <form id="jobPostForm" class="hidden">
+        <h2>Post a New Job</h2>
+        <fieldset>
+          <label for="jobTitle">Job Title</label>
+          <input type="text" id="jobTitle" required>
+        </fieldset>
+        <fieldset>
+          <label for="jobDescription">Description</label>
+          <textarea id="jobDescription" rows="5" required></textarea>
+        </fieldset>
+        <fieldset>
+          <label for="jobSkills">Required Skills</label>
+          <input type="text" id="jobSkills" required>
+        </fieldset>
+        <fieldset>
+          <label for="jobBudget">Budget (ZAR)</label>
+          <input type="number" id="jobBudget" required>
+        </fieldset>
+        <fieldset>
+          <label for="jobDuration">Estimated Duration (days)</label>
+          <input type="number" id="jobDuration" required>
+        </fieldset>
+        <button type="submit">Post Job</button>
+      </form>
+
+      <section id="freelancerSearch" class="search-section hidden">
+        <h2>Find Freelancers</h2>
+        <form id="freelancerSearchForm">
+          <input type="text" id="freelancerSearchInput" placeholder="Search by name, skills, or location">
+          <button type="submit">Search Freelancers</button>
+        </form>
+        <p class="search-info">Search by name, title, skills, location, rate, bio or experience</p>
+        <menu class="filter-options">
+          <select id="freelancerRateFilter">
+            <option value="">Any Rate</option>
+            <option value="0-500">Under R500/hr</option>
+            <option value="500-1000">R500-R1000/hr</option>
+            <option value="1000+">R1000+/hr</option>
+          </select>
+          <select id="freelancerExperienceFilter">
+            <option value="">Any Experience</option>
+            <option value="1-3">1-3 years</option>
+            <option value="4-7">4-7 years</option>
+            <option value="8+">8+ years</option>
+          </select>
+        </menu>
+      </section>
+
+      <article id="freelancersContainer" class="hidden">
+        <h2>Available Freelancers</h2>
+        <section id="freelancersList"></section>
+      </article>
+    </section>
+  </main>
+
+  <script src="../pages/script.js"></script>
 </body>
 </html>

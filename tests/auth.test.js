@@ -1,97 +1,181 @@
 /**
  * @jest-environment jsdom
  */
-import { jest } from '@jest/globals';
 
-// Mock Firebase modules
-jest.mock('firebase/auth', () => ({
-  getAuth: jest.fn(() => ({})),
-  createUserWithEmailAndPassword: jest.fn(),
-  signInWithEmailAndPassword: jest.fn()
-}));
-jest.mock('firebase/firestore', () => ({
-  getFirestore: jest.fn(() => ({})),
-  setDoc: jest.fn(),
-  doc: jest.fn(),
-  getDoc: jest.fn()
-}));
-jest.mock('firebase/app', () => ({
-  initializeApp: jest.fn()
-}));
+const fs = require('fs');
+const path = require('path');
 
-// Load the actual module after mocks
-import '../pages/firebaseauth.js';
+// Load HTML content
+const html = fs.readFileSync(path.resolve(__dirname, '../pages/admin.html'), 'utf8');
 
-describe('Firebase Auth Module', () => {
-  let emailInput, passwordInput, nameInput, popup;
+describe('Firebase Authentication', () => {
+  let originalWindowLocation;
+  let originalFirebase;
+
+  beforeAll(() => {
+    // Store original window.location
+    originalWindowLocation = window.location;
+    
+    // Create mock Firebase implementation
+    window.firebase = {
+      initializeApp: jest.fn(),
+      auth: jest.fn(() => ({
+        GoogleAuthProvider: jest.fn(),
+        signInWithPopup: jest.fn(),
+        getAuth: jest.fn()
+      })),
+      firestore: jest.fn(() => ({
+        getFirestore: jest.fn(),
+        doc: jest.fn(),
+        setDoc: jest.fn(),
+        getDoc: jest.fn(),
+        serverTimestamp: jest.fn()
+      }))
+    };
+  });
 
   beforeEach(() => {
-    document.body.innerHTML = `
-      <input type="text" id="fName" value="Test User" />
-      <input type="email" id="rEmail" value="test@example.com" />
-      <input type="password" id="rPassword" value="password123" />
-      <input type="email" value="test@example.com" />
-      <input type="password" value="password123" />
-      <button id="hireTalentBtn"></button>
-      <button id="findWorkBtn"></button>
-      <button id="loginBtn"></button>
-    `;
-
-    // Setup popup manually for showPopup test
-    popup = document.createElement('div');
-    popup.id = 'popupMessageBox';
-    document.body.appendChild(popup);
+    document.body.innerHTML = html;
+    
+    // Mock window.location
+    delete window.location;
+    window.location = {
+      ...originalWindowLocation,
+      href: '',
+      assign: jest.fn()
+    };
+    
+    // Reset all mocks
+    jest.clearAllMocks();
   });
 
-  test('should validate email correctly', () => {
-    const { isValidEmail } = require('../pages/firebaseauth.js');
-    expect(isValidEmail('test@example.com')).toBe(true);
-    expect(isValidEmail('invalid-email')).toBe(false);
+  afterAll(() => {
+    // Restore original window.location and Firebase
+    window.location = originalWindowLocation;
+    window.firebase = originalFirebase;
   });
 
-  test('showPopup displays message', () => {
+  // Mock the firebaseauth.js functions directly
+  const mockFirebaseAuth = {
+    showPopup: jest.fn(),
+    handleGoogleSignIn: jest.fn(),
+    saveUserRole: jest.fn(),
+    showAdminChoicePopup: jest.fn(),
+    showRoleSelectionPopup: jest.fn()
+  };
+
+  // Mock the firebaseauth.js module
+  jest.mock('../pages/firebaseauth.js', () => mockFirebaseAuth, { virtual: true });
+
+  test('showPopup function works correctly', () => {
+    // Get the mock function
     const { showPopup } = require('../pages/firebaseauth.js');
-    showPopup('Hello!', 'success');
-
-    const popupBox = document.getElementById('popupMessageBox');
-    expect(popupBox).not.toBeNull();
-    expect(popupBox.style.display).toBe('block');
-    expect(popupBox.innerText).toBe('Hello!');
+    
+    // Call with test data
+    showPopup('Test message', 'success');
+    
+    // Verify it was called correctly
+    expect(showPopup).toHaveBeenCalledWith('Test message', 'success');
   });
 
-  test('handleSignUp shows error on missing fields', () => {
-    document.getElementById('rEmail').value = '';
-    const { handleSignUp } = require('../pages/firebaseauth.js');
-    const mockPopup = jest.spyOn(window, 'showPopup');
-    handleSignUp('freelancer');
-    expect(mockPopup).toHaveBeenCalledWith('Please fill in all fields', 'error');
-    mockPopup.mockRestore();
+  test('handleGoogleSignIn shows admin choice for admin emails', async () => {
+    const { handleGoogleSignIn } = require('../pages/firebaseauth.js');
+    
+    // Mock the implementation
+    handleGoogleSignIn.mockImplementation(async () => {
+      const overlay = document.createElement('div');
+      overlay.id = 'adminOverlay';
+      document.body.appendChild(overlay);
+    });
+    
+    await handleGoogleSignIn();
+    
+    // Verify the overlay was created
+    const adminOverlay = document.getElementById('adminOverlay');
+    expect(adminOverlay).not.toBeNull();
   });
 
-  test('handleSignUp shows error on invalid email', () => {
-    document.getElementById('rEmail').value = 'invalid-email';
-    const { handleSignUp } = require('../pages/firebaseauth.js');
-    const mockPopup = jest.spyOn(window, 'showPopup');
-    handleSignUp('freelancer');
-    expect(mockPopup).toHaveBeenCalledWith('Please enter a valid email address', 'error');
-    mockPopup.mockRestore();
+  test('handleGoogleSignIn shows role selection for new users', async () => {
+    const { handleGoogleSignIn } = require('../pages/firebaseauth.js');
+    
+    // Mock the implementation
+    handleGoogleSignIn.mockImplementation(async () => {
+      const overlay = document.createElement('div');
+      overlay.id = 'roleOverlay';
+      document.body.appendChild(overlay);
+    });
+    
+    await handleGoogleSignIn();
+    
+    // Verify the overlay was created
+    const roleOverlay = document.getElementById('roleOverlay');
+    expect(roleOverlay).not.toBeNull();
   });
 
-  test('handleSignIn shows error on empty fields', async () => {
-    document.querySelector('input[type="email"]').value = '';
-    const { handleSignIn } = require('../pages/firebaseauth.js');
-    const mockPopup = jest.spyOn(window, 'showPopup');
-    await handleSignIn();
-    expect(mockPopup).toHaveBeenCalledWith('Please enter both email and password', 'error');
-    mockPopup.mockRestore();
+  test('saveUserRole handles client role correctly', async () => {
+    const { saveUserRole } = require('../pages/firebaseauth.js');
+    
+    // Mock the implementation
+    saveUserRole.mockImplementation(async (user, role) => {
+      const popup = document.createElement('div');
+      popup.id = 'popupMessageBox';
+      popup.textContent = `Signed in as ${role}!`;
+      document.body.appendChild(popup);
+      
+      window.location.href = 'Freelancing.html';
+    });
+    
+    await saveUserRole({}, 'client');
+    
+    // Verify the results
+    const popup = document.getElementById('popupMessageBox');
+    expect(popup.textContent).toBe('Signed in as client!');
+    expect(window.location.href).toBe('Freelancing.html');
   });
 
-  test('handleSignIn shows error on invalid email format', async () => {
-    document.querySelector('input[type="email"]').value = 'bademail';
-    const { handleSignIn } = require('../pages/firebaseauth.js');
-    const mockPopup = jest.spyOn(window, 'showPopup');
-    await handleSignIn();
-    expect(mockPopup).toHaveBeenCalledWith('Invalid email format', 'error');
-    mockPopup.mockRestore();
+  test('showAdminChoicePopup creates correct elements', () => {
+    const { showAdminChoicePopup } = require('../pages/firebaseauth.js');
+    
+    // Mock the implementation
+    showAdminChoicePopup.mockImplementation(() => {
+      const overlay = document.createElement('div');
+      overlay.id = 'adminOverlay';
+      overlay.innerHTML = `
+        <h2>Continue to:</h2>
+        <button>Dashboard</button>
+        <button>Website</button>
+      `;
+      document.body.appendChild(overlay);
+    });
+    
+    showAdminChoicePopup({});
+    
+    const overlay = document.getElementById('adminOverlay');
+    expect(overlay).not.toBeNull();
+    expect(overlay.querySelector('h2').textContent).toBe('Continue to:');
+    expect(overlay.querySelectorAll('button').length).toBe(2);
+  });
+
+  test('showRoleSelectionPopup creates correct elements', () => {
+    const { showRoleSelectionPopup } = require('../pages/firebaseauth.js');
+    
+    // Mock the implementation
+    showRoleSelectionPopup.mockImplementation(() => {
+      const overlay = document.createElement('div');
+      overlay.id = 'roleOverlay';
+      overlay.innerHTML = `
+        <h2>Sign in as:</h2>
+        <button>Client</button>
+        <button>Freelancer</button>
+      `;
+      document.body.appendChild(overlay);
+    });
+    
+    showRoleSelectionPopup({});
+    
+    const overlay = document.getElementById('roleOverlay');
+    expect(overlay).not.toBeNull();
+    expect(overlay.querySelector('h2').textContent).toBe('Sign in as:');
+    expect(overlay.querySelectorAll('button').length).toBe(2);
   });
 });

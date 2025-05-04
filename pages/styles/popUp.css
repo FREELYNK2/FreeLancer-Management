@@ -1,0 +1,116 @@
+/* Overlay styling */
+#adminOverlay,
+#roleOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background-color: rgba(0, 0, 0, 0.6); */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Popup container */
+.popup-container {
+  background-color: #E2E8F0;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 280px;
+  width: 90%;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Popup heading */
+.popup-heading {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+/* Button styling */
+.popup-btn {
+  background-color: #4285F4;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  margin: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 100px;
+  transition: background-color 0.2s;
+}
+
+.popup-btn:hover {
+  background-color: #3367D6;
+}
+
+/* Message popup styling */
+#popupMessageBox {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  max-width: 280px;
+  color: white;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Success and error states */
+#popupMessageBox.success {
+  background-color: #34A853;
+}
+
+#popupMessageBox.error {
+  background-color: #EA4335;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .popup-container {
+    padding: 16px;
+    max-width: 90%;
+  }
+  
+  #popupMessageBox {
+    max-width: 90%;
+    right: 5%;
+    left: 5%;
+    top: 10px;
+    text-align: center;
+  }
+  
+  .popup-heading {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .popup-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
