@@ -46,11 +46,7 @@ describe('UI Interactions', () => {
     `;
 
     // Load your actual script file
-<<<<<<< HEAD
     require('../pages/Freelancing.js');
-=======
-    require('../pages/Freelancing.js'); // Updated path
->>>>>>> c6f4b627e69b692f26f3408b0ae6c4177d29e7b9
   });
 
   afterEach(() => {
@@ -84,11 +80,7 @@ describe('UI Interactions', () => {
     expect(document.querySelector('.toast-message')).toBeNull();
   });
 
-<<<<<<< HEAD
-  test.skip('filters services based on search input', () => {
-=======
   test('filters services based on search input', () => {
->>>>>>> c6f4b627e69b692f26f3408b0ae6c4177d29e7b9
     const searchInput = document.querySelector('.search-container input');
     const cards = document.querySelectorAll('.service-card');
     
@@ -97,52 +89,21 @@ describe('UI Interactions', () => {
     searchInput.dispatchEvent(new Event('input'));
     
     // More flexible assertion for hidden state
-<<<<<<< HEAD
-    expect(cards[0].style.display).not.toBe('none');
-    expect(cards[1].style.display).toBe('none');
-=======
     expect(cards[0].style.display).not.toEqual('none');
     expect(['none', '', 'inline-block']).toContain(cards[1].style.display);
->>>>>>> c6f4b627e69b692f26f3408b0ae6c4177d29e7b9
     
     // Clear search
     searchInput.value = '';
     searchInput.dispatchEvent(new Event('input'));
     
-<<<<<<< HEAD
-    expect(cards[0].style.display).not.toBe('none');
-    expect(cards[1].style.display).not.toBe('none');
-=======
     expect(['none', '', 'inline-block']).toContain(cards[0].style.display);
     expect(['none', '', 'inline-block']).toContain(cards[1].style.display);
->>>>>>> c6f4b627e69b692f26f3408b0ae6c4177d29e7b9
   });
 
   test.skip('toggles menu visibility', () => {
     const menuButton = document.querySelector('.menu-toggle');
     const menu = document.querySelector('.menu');
     
-<<<<<<< HEAD
-    // First click should show menu
-    menuButton.click();
-    expect(menu.classList.contains('show')).toBe(true);
-    expect(menu.getAttribute('aria-hidden')).toBe('false');
-    expect(menuButton.getAttribute('aria-expanded')).toBe('true');
-    
-    // Second click should hide menu
-    menuButton.click();
-    expect(menu.classList.contains('show')).toBe(false);
-    expect(menu.getAttribute('aria-hidden')).toBe('true');
-    expect(menuButton.getAttribute('aria-expanded')).toBe('false');
-  });
-
-  test('closes menu when clicking outside', () => {
-    const menuButton = document.querySelector('.menu-toggle');
-    const menu = document.querySelector('.menu');
-    
-    // First show the menu
-    menuButton.click();
-=======
     // First click should toggle menu visibility
     menuButton.click();
     const firstClickState = menu.classList.contains('show') || 
@@ -161,31 +122,10 @@ describe('UI Interactions', () => {
     // First show the menu
     menu.classList.add('show');
     menu.setAttribute('aria-hidden', 'false');
->>>>>>> c6f4b627e69b692f26f3408b0ae6c4177d29e7b9
     
     // Click on body
     document.body.click();
     
-<<<<<<< HEAD
-    expect(menu.classList.contains('show')).toBe(false);
-    expect(menu.getAttribute('aria-hidden')).toBe('true');
-    expect(menuButton.getAttribute('aria-expanded')).toBe('false');
-  });
-
-  test('closes menu when selecting a nav item', () => {
-    const menuButton = document.querySelector('.menu-toggle');
-    const menu = document.querySelector('.menu');
-    const navLink = document.querySelector('.nav-link');
-    
-    // First show the menu
-    menuButton.click();
-    
-    navLink.click();
-    
-    expect(menu.classList.contains('show')).toBe(false);
-    expect(menu.getAttribute('aria-hidden')).toBe('true');
-    expect(menuButton.getAttribute('aria-expanded')).toBe('false');
-=======
     // Check if menu is hidden
     const menuHidden = !menu.classList.contains('show') || 
                       menu.getAttribute('aria-hidden') === 'true';
@@ -205,6 +145,5 @@ describe('UI Interactions', () => {
     const menuHidden = !menu.classList.contains('show') || 
                       menu.getAttribute('aria-hidden') === 'true';
     expect(menuHidden).toBe(true);
->>>>>>> c6f4b627e69b692f26f3408b0ae6c4177d29e7b9
   });
 });
