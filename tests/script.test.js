@@ -8,7 +8,7 @@ describe('Dummy Passing Tests', () => {
     });
 
     test('placeholder test 3', () => {
-        const sample = ['a', 'b', 'c'];
-        expect(sample.includes('b')).toBe(true);
+        const sample = ['a', 'r', 'c'];
+        expect(sample.includes('r')).toBe(true);
     });
 });
