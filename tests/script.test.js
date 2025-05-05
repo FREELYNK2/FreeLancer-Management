@@ -2,6 +2,14 @@
  * @jest-environment jsdom
  */
 
+
+const fs = require('fs');
+const path = require('path');
+
+const html = fs.readFileSync(path.resolve(__dirname, '../pages/index2.html'), 'utf8');
+    // Now require the script after DOM and mocks are set up
+    require('../pages/script.js');
+
 describe('View Navigation', () => {
     beforeEach(() => {
         // Mock DOM elements with proper className initialization
