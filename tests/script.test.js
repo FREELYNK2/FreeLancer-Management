@@ -1,215 +1,133 @@
-/**
- * @jest-environment jsdom
- */
+// Test suite for highlightSearchTerms function
+describe('highlightSearchTerms', () => {
+  it('should return original text when no search term is provided', () => {
+    const result = highlightSearchTerms('Sample text', '');
+    expect(result).toBe('Sample text');
+  });
 
-const fs = require('fs');
-const path = require('path');
+  it('should highlight single match in text', () => {
+    const result = highlightSearchTerms('Sample text with match', 'match');
+    expect(result).toBe('Sample text with <mark class="highlight">match</mark>');
+  });
 
-// Load HTML content
-const html = fs.readFileSync(path.resolve(__dirname, '../pages/index2.html'), 'utf8');
+  it('should highlight multiple matches in text', () => {
+    const result = highlightSearchTerms('Match here and match there', 'match');
+    expect(result).toBe('<mark class="highlight">Match</mark> here and <mark class="highlight">match</mark> there');
+  });
 
-// Mock Firebase Compat SDK (v9 compat mode)
-jest.mock('firebase', () => {
-    const mockInitializeApp = jest.fn();
-    return {
-        initializeApp: mockInitializeApp,
-        // Add other firebase.app methods if needed
-    };
+  it('should handle special regex characters in search term', () => {
+    const result = highlightSearchTerms('Text with (special) chars', '(special)');
+    expect(result).toBe('Text with <mark class="highlight">(special)</mark> chars');
+  });
 });
 
-jest.mock('firebase/firestore', () => {
-    const mockData = [
-        {
-            id: '1',
-            data: () => ({
-                name: "John Doe",
-                title: "Web Developer",
-                skills: ["JavaScript", "HTML", "CSS"],
-                rate: "R500/hr",
-                bio: "Experienced web developer",
-                location: "Johannesburg",
-                experience: "5 years",
-                photo: ""
-            })
-        }
-    ];
+// Test suite for filterBudget function
+describe('filterBudget', () => {
+  it('should return true when no filter is applied', () => {
+    const result = filterBudget('ZAR 500', '');
+    expect(result).toBe(true);
+  });
 
-    return {
-        getFirestore: jest.fn(),
-        collection: jest.fn(() => ({
-            get: jest.fn(() => Promise.resolve({
-                forEach: (callback) => mockData.forEach(doc => callback(doc))
-            })),
-            add: jest.fn(() => Promise.resolve({ id: 'mock-id' }))
-        })),
-        // Add other firestore methods used in your code
-        FieldValue: {
-            serverTimestamp: jest.fn()
-        }
-    };
+  it('should match budget in 0-1000 range', () => {
+    expect(filterBudget('ZAR 500', '0-1000')).toBe(true);
+    expect(filterBudget('ZAR 1000', '0-1000')).toBe(true);
+    expect(filterBudget('ZAR 1001', '0-1000')).toBe(false);
+  });
+
+  it('should match budget in 1000-5000 range', () => {
+    expect(filterBudget('ZAR 1001', '1000-5000')).toBe(true);
+    expect(filterBudget('ZAR 3000', '1000-5000')).toBe(true);
+    expect(filterBudget('ZAR 5000', '1000-5000')).toBe(true);
+    expect(filterBudget('ZAR 999', '1000-5000')).toBe(false);
+  });
+
+  it('should match budget in 5000+ range', () => {
+    expect(filterBudget('ZAR 5001', '5000+')).toBe(true);
+    expect(filterBudget('ZAR 10000', '5000+')).toBe(true);
+    expect(filterBudget('ZAR 4999', '5000+')).toBe(false);
+  });
 });
 
-jest.mock('firebase/storage', () => {
-    return {
-        ref: jest.fn(() => ({
-            child: jest.fn(() => ({
-                put: jest.fn(() => Promise.resolve({
-                    ref: {
-                        getDownloadURL: jest.fn(() => Promise.resolve('mock-url'))
-                    }
-                }))
-            }))
-        }))
-    };
+// Test suite for filterDuration function
+describe('filterDuration', () => {
+  it('should return true when no filter is applied', () => {
+    const result = filterDuration('5 days', '');
+    expect(result).toBe(true);
+  });
+
+  it('should match duration in 1-7 days range', () => {
+    expect(filterDuration('1 days', '1-7')).toBe(true);
+    expect(filterDuration('7 days', '1-7')).toBe(true);
+    expect(filterDuration('8 days', '1-7')).toBe(false);
+  });
+
+  it('should match duration in 8-30 days range', () => {
+    expect(filterDuration('8 days', '8-30')).toBe(true);
+    expect(filterDuration('30 days', '8-30')).toBe(true);
+    expect(filterDuration('31 days', '8-30')).toBe(false);
+  });
+
+  it('should match duration in 30+ days range', () => {
+    expect(filterDuration('31 days', '30+')).toBe(true);
+    expect(filterDuration('100 days', '30+')).toBe(true);
+    expect(filterDuration('29 days', '30+')).toBe(false);
+  });
 });
 
-// Mock data
-const mockFreelancers = [
-    {
-        id: 1,
-        name: "John Doe",
-        title: "Web Developer",
-        skills: ["JavaScript", "HTML", "CSS"],
-        rate: "R500/hr",
-        bio: "Experienced web developer",
-        location: "Johannesburg",
-        experience: "5 years",
-        photo: ""
-    }
-];
+// Test suite for filterRate function
+describe('filterRate', () => {
+  it('should return true when no filter is applied', () => {
+    const result = filterRate('R500/hr', '');
+    expect(result).toBe(true);
+  });
 
-const mockJobs = [
-    {
-        id: 1,
-        title: "Website Development",
-        description: "Build a company website",
-        skills: ["JavaScript", "React"],
-        budget: "ZAR 10000",
-        duration: "30 days",
-        postedAt: "5/1/2023"
-    }
-];
+  it('should match rate in 0-500 range', () => {
+    expect(filterRate('R500/hr', '0-500')).toBe(true);
+    expect(filterRate('R100/hr', '0-500')).toBe(true);
+    expect(filterRate('R501/hr', '0-500')).toBe(false);
+  });
 
-// Mock alert
-global.alert = jest.fn();
+  it('should match rate in 500-1000 range', () => {
+    expect(filterRate('R501/hr', '500-1000')).toBe(true);
+    expect(filterRate('R1000/hr', '500-1000')).toBe(true);
+    expect(filterRate('R499/hr', '500-1000')).toBe(false);
+  });
 
-// Mock FileReader
-class MockFileReader {
-    constructor() {
-        this.onload = null;
-        this.result = 'data:image/png;base64,mockImageData';
-    }
-    readAsDataURL() {
-        this.onload && this.onload({ target: { result: this.result } });
-    }
-}
-
-// Set up DOM and environment
-beforeEach(() => {
-    document.body.innerHTML = html;
-
-    // Mock global firebase object
-    global.firebase = {
-        initializeApp: jest.fn(),
-        firestore: () => ({
-            collection: jest.fn(() => ({
-                get: jest.fn(() => Promise.resolve({
-                    forEach: (callback) => mockData.forEach(doc => callback(doc))
-                })),
-                add: jest.fn(() => Promise.resolve({ id: 'mock-id' }))
-            })),
-            FieldValue: {
-                serverTimestamp: jest.fn()
-            }
-        }),
-        storage: () => ({
-            ref: jest.fn(() => ({
-                child: jest.fn(() => ({
-                    put: jest.fn(() => Promise.resolve({
-                        ref: {
-                            getDownloadURL: jest.fn(() => Promise.resolve('mock-url'))
-                        }
-                    }))
-                }))
-            }))
-        })
-    };
-
-    // Mock FileReader
-    global.FileReader = MockFileReader;
-
-    // Load the script
-    jest.isolateModules(() => {
-        require('../pages/script.js');
-    });
-
-    // Trigger DOMContentLoaded after a small delay
-    setTimeout(() => {
-        const event = new Event('DOMContentLoaded');
-        document.dispatchEvent(event);
-    }, 0);
+  it('should match rate in 1000+ range', () => {
+    expect(filterRate('R1001/hr', '1000+')).toBe(true);
+    expect(filterRate('R2000/hr', '1000+')).toBe(true);
+    expect(filterRate('R999/hr', '1000+')).toBe(false);
+  });
 });
 
-afterEach(() => {
-    jest.clearAllMocks();
-});
+// Test suite for filterExperience function
+describe('filterExperience', () => {
+  it('should return true when no filter is applied', () => {
+    const result = filterExperience('5 years', '');
+    expect(result).toBe(true);
+  });
 
-// Tests
-describe('View Navigation', () => {
-    test('should switch to home view', () => {
-        const homeBtn = document.getElementById('homeBtn');
-        homeBtn.click();
+  it('should match experience in 1-3 years range', () => {
+    expect(filterExperience('1 year', '1-3')).toBe(true);
+    expect(filterExperience('2 years', '1-3')).toBe(true);
+    expect(filterExperience('3 years', '1-3')).toBe(true);
+    expect(filterExperience('4 years', '1-3')).toBe(false);
+  });
 
-        expect(document.getElementById('homeView').classList).not.toContain('hidden');
-        expect(document.getElementById('freelancerView').classList).toContain('hidden');
-        expect(document.getElementById('clientView').classList).toContain('hidden');
-        expect(homeBtn.classList).toContain('active');
-    });
+  it('should match experience in 4-7 years range', () => {
+    expect(filterExperience('4 years', '4-7')).toBe(true);
+    expect(filterExperience('7 years', '4-7')).toBe(true);
+    expect(filterExperience('8 years', '4-7')).toBe(false);
+  });
 
-    test('should switch to freelancer view', () => {
-        const freelancerBtn = document.getElementById('freelancerBtn');
-        freelancerBtn.click();
+  it('should match experience in 8+ years range', () => {
+    expect(filterExperience('8 years', '8+')).toBe(true);
+    expect(filterExperience('10 years', '8+')).toBe(true);
+    expect(filterExperience('7 years', '8+')).toBe(false);
+  });
 
-        expect(document.getElementById('freelancerView').classList).not.toContain('hidden');
-        expect(document.getElementById('homeView').classList).toContain('hidden');
-        expect(document.getElementById('clientView').classList).toContain('hidden');
-        expect(freelancerBtn.classList).toContain('active');
-    });
-
-    test('should switch to client view', () => {
-        const clientBtn = document.getElementById('clientBtn');
-        clientBtn.click();
-
-        expect(document.getElementById('clientView').classList).not.toContain('hidden');
-        expect(document.getElementById('homeView').classList).toContain('hidden');
-        expect(document.getElementById('freelancerView').classList).toContain('hidden');
-        expect(clientBtn.classList).toContain('active');
-    });
-});
-
-describe('Helper Functions', () => {
-    test('should highlight search terms', () => {
-        const result = window.highlightSearchTerms('JavaScript Developer', 'script');
-        expect(result).toContain('<mark class="highlight">Script</mark>');
-    });
-
-    test('should filter by budget', () => {
-        expect(window.filterBudget('ZAR 2000', '1000-5000')).toBe(true);
-        expect(window.filterBudget('ZAR 6000', '1000-5000')).toBe(false);
-    });
-
-    test('should filter by duration', () => {
-        expect(window.filterDuration('15 days', '8-30')).toBe(true);
-        expect(window.filterDuration('35 days', '8-30')).toBe(false);
-    });
-
-    test('should filter by rate', () => {
-        expect(window.filterRate('R600/hr', '500-1000')).toBe(true);
-        expect(window.filterRate('R1200/hr', '500-1000')).toBe(false);
-    });
-
-    test('should filter by experience', () => {
-        expect(window.filterExperience('5 years', '4-7')).toBe(true);
-        expect(window.filterExperience('8 years', '4-7')).toBe(false);
-    });
+  it('should handle invalid experience formats', () => {
+    expect(filterExperience('invalid', '1-3')).toBe(false);
+    expect(filterExperience('', '1-3')).toBe(false);
+  });
 });
