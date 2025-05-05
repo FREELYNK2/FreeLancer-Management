@@ -9,7 +9,7 @@ const path = require('path');
 const html = fs.readFileSync(path.resolve(__dirname, '../pages/index2.html'), 'utf8');
 
 // Mock Firebase Compat SDK (v9 compat mode)
-jest.mock('firebase/app', () => {
+jest.mock('firebase', () => {
     const mockInitializeApp = jest.fn();
     return {
         initializeApp: mockInitializeApp,
