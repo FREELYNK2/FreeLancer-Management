@@ -1,3 +1,7 @@
+// Import Firebase services
+// Uncomment this line if you're using ES modules
+// import { db, storage } from './firebase-config.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     // DOM elements
     const homeView = document.getElementById('homeView');
@@ -33,13 +37,68 @@ document.addEventListener('DOMContentLoaded', function() {
     const freelancersList = document.getElementById('freelancersList');
     const freelancerSearch = document.getElementById('freelancerSearch');
     
-    // Data storage
-    let freelancers = JSON.parse(localStorage.getItem('freelancers')) || [];
-    let jobs = JSON.parse(localStorage.getItem('jobs')) || [];
+    // Data storage - now using Firebase
+    let freelancers = [];
+    let jobs = [];
+    
+    // Reference Firebase collections
+    const firestore = firebase.firestore();
+    const freelancersCollection = firestore.collection('Skills Added');
+    const jobsCollection = firestore.collection('jobs');
+    const storageRef = firebase.storage().ref();
     
     // Initialize
     setupEventListeners();
     initSearch();
+    loadFreelancers();
+    loadJobs();
+    
+    // Load data from Firestore
+    function loadFreelancers() {
+        freelancersCollection.get()
+            .then((querySnapshot) => {
+                freelancers = [];
+                querySnapshot.forEach((doc) => {
+                    const freelancer = {
+                        id: doc.id,
+                        ...doc.data()
+                    };
+                    freelancers.push(freelancer);
+                });
+                
+                // If currently viewing freelancers list, update display
+                if (!clientView.classList.contains('hidden') && !freelancersContainer.classList.contains('hidden')) {
+                    displayFreelancers();
+                }
+            })
+            .catch((error) => {
+                console.error("Error loading freelancers: ", error);
+                alert("Failed to load freelancers. Please check your connection.");
+            });
+    }
+    
+    function loadJobs() {
+        jobsCollection.get()
+            .then((querySnapshot) => {
+                jobs = [];
+                querySnapshot.forEach((doc) => {
+                    const job = {
+                        id: doc.id,
+                        ...doc.data()
+                    };
+                    jobs.push(job);
+                });
+                
+                // If currently viewing jobs list, update display
+                if (!freelancerView.classList.contains('hidden') && !jobListings.classList.contains('hidden')) {
+                    displayJobs();
+                }
+            })
+            .catch((error) => {
+                console.error("Error loading jobs: ", error);
+                alert("Failed to load jobs. Please check your connection.");
+            });
+    }
     
     function setupEventListeners() {
         // Navigation
@@ -135,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 freelancer.rate,
                 freelancer.bio,
                 freelancer.experience,
-                ...freelancer.skills
+                ...(freelancer.skills || [])
             ].join(' ').toLowerCase();
             
             return searchFields.includes(term);
@@ -150,14 +209,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 job.budget,
                 job.duration,
                 job.postedAt,
-                ...job.skills
+                ...(job.skills || [])
             ].join(' ').toLowerCase();
             
             return searchFields.includes(term);
         });
     }
     
-    // Photo upload handler
+    // Photo upload handler - now with Firebase Storage
     function handlePhotoUpload(e) {
         const file = e.target.files[0];
         if (file) {
@@ -170,6 +229,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 photoPreview.appendChild(img);
             };
             reader.readAsDataURL(file);
+        }
+    }
+    
+    // Upload image to Firebase Storage
+    async function uploadImageToFirebase(file) {
+        // Create a unique filename
+        const filename = `profile_${Date.now()}_${file.name}`;
+        const fileRef = storageRef.child(`profile_photos/${filename}`);
+        
+        try {
+            // Upload the file
+            const snapshot = await fileRef.put(file);
+            // Get the download URL
+            const downloadURL = await snapshot.ref.getDownloadURL();
+            return downloadURL;
+        } catch (error) {
+            console.error("Error uploading image: ", error);
+            return null;
         }
     }
     
@@ -189,42 +266,60 @@ document.addEventListener('DOMContentLoaded', function() {
         displayJobs();
     }
     
-    function saveFreelancerProfile(e) {
+    // Save freelancer profile to Firestore
+    async function saveFreelancerProfile(e) {
         e.preventDefault();
         
-        let photoUrl = '';
-        if (freelancerPhotoInput.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                photoUrl = event.target.result;
-                saveFreelancerData(photoUrl);
+        // Show loading state
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerText;
+        submitBtn.innerText = 'Saving...';
+        submitBtn.disabled = true;
+        
+        try {
+            let photoUrl = '';
+            const file = freelancerPhotoInput.files[0];
+            
+            if (file) {
+                photoUrl = await uploadImageToFirebase(file);
+                if (!photoUrl) {
+                    throw new Error("Failed to upload image");
+                }
+            }
+            
+            const freelancerData = {
+                name: document.getElementById('freelancerName').value,
+                title: document.getElementById('freelancerTitle').value,
+                skills: document.getElementById('freelancerSkills').value.split(',').map(skill => skill.trim()),
+                rate: 'R' + document.getElementById('freelancerRate').value + '/hr',
+                bio: document.getElementById('freelancerBio').value,
+                location: document.getElementById('freelancerLocation').value,
+                experience: document.getElementById('freelancerExperience').value + ' years', // FIXED: was using freelancerRate instead of freelancerExperience
+                photo: photoUrl,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
-            reader.readAsDataURL(freelancerPhotoInput.files[0]);
-        } else {
-            saveFreelancerData(photoUrl);
+            
+            // Add to Firestore
+            const docRef = await freelancersCollection.add(freelancerData);
+            
+            // Update local array
+            freelancers.push({
+                id: docRef.id,
+                ...freelancerData
+            });
+            
+            alert('Profile saved successfully!');
+            freelancerProfileForm.reset();
+            freelancerProfileForm.classList.add('hidden');
+            photoPreview.innerHTML = '';
+        } catch (error) {
+            console.error("Error saving profile: ", error);
+            alert("Failed to save profile. Please try again.");
+        } finally {
+            // Restore button state
+            submitBtn.innerText = originalBtnText;
+            submitBtn.disabled = false;
         }
-    }
-    
-    function saveFreelancerData(photoUrl) {
-        const freelancer = {
-            id: Date.now(),
-            name: document.getElementById('freelancerName').value,
-            title: document.getElementById('freelancerTitle').value,
-            skills: document.getElementById('freelancerSkills').value.split(',').map(skill => skill.trim()),
-            rate: 'R' + document.getElementById('freelancerRate').value + '/hr',
-            bio: document.getElementById('freelancerBio').value,
-            location: document.getElementById('freelancerLocation').value,
-            experience: document.getElementById('freelancerRate').value + ' years', // Ensure consistent format
-            photo: photoUrl
-        };
-        
-        freelancers.push(freelancer);
-        localStorage.setItem('freelancers', JSON.stringify(freelancers));
-        
-        alert('Profile saved successfully!');
-        freelancerProfileForm.reset();
-        freelancerProfileForm.classList.add('hidden');
-        photoPreview.innerHTML = '';
     }
     
     // Client functions
@@ -241,26 +336,47 @@ document.addEventListener('DOMContentLoaded', function() {
         displayFreelancers();
     }
     
-    function postNewJob(e) {
+    // Post new job to Firestore
+    async function postNewJob(e) {
         e.preventDefault();
         
-        const job = {
-            id: Date.now(),
-            title: document.getElementById('jobTitle').value,
-            description: document.getElementById('jobDescription').value,
-            skills: document.getElementById('jobSkills').value.split(',').map(skill => skill.trim()),
-            budget: 'ZAR ' + document.getElementById('jobBudget').value,
-            duration: document.getElementById('jobDuration').value + ' days',
-            postedAt: new Date().toLocaleDateString()
-        };
+        // Show loading state
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerText;
+        submitBtn.innerText = 'Posting...';
+        submitBtn.disabled = true;
         
-        jobs.push(job);
-        localStorage.setItem('jobs', JSON.stringify(jobs));
-        
-        alert('Job posted successfully!');
-        jobPostForm.reset();
-        jobPostForm.classList.add('hidden');
-        displayJobs();
+        try {
+            const jobData = {
+                title: document.getElementById('jobTitle').value,
+                description: document.getElementById('jobDescription').value,
+                skills: document.getElementById('jobSkills').value.split(',').map(skill => skill.trim()),
+                budget: 'ZAR ' + document.getElementById('jobBudget').value,
+                duration: document.getElementById('jobDuration').value + ' days',
+                postedAt: new Date().toLocaleDateString(),
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            // Add to Firestore
+            const docRef = await jobsCollection.add(jobData);
+            
+            // Update local array
+            jobs.push({
+                id: docRef.id,
+                ...jobData
+            });
+            
+            alert('Job posted successfully!');
+            jobPostForm.reset();
+            jobPostForm.classList.add('hidden');
+        } catch (error) {
+            console.error("Error posting job: ", error);
+            alert("Failed to post job. Please try again.");
+        } finally {
+            // Restore button state
+            submitBtn.innerText = originalBtnText;
+            submitBtn.disabled = false;
+        }
     }
     
     // Search functionality
@@ -314,6 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             displayFreelancers(filteredFreelancers, searchTerm);
         });
+        
         // Real-time search
         document.getElementById('jobSearchInput').addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
@@ -448,6 +565,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p class="posted">Posted: ${job.postedAt}</p>
                 <button class="apply-btn" data-id="${job.id}">Apply</button>
             `;
+            
+            // Add event listener for apply button
+            const applyBtn = article.querySelector('.apply-btn');
+            applyBtn.addEventListener('click', () => {
+                alert(`Application feature for job "${job.title}" will be implemented in the next phase.`);
+                // Future implementation: handleJobApplication(job.id);
+            });
+            
             jobsContainer.appendChild(article);
         });
     }
@@ -476,17 +601,25 @@ document.addEventListener('DOMContentLoaded', function() {
                     }).join('')}
                 </menu>
                 <p class="location">${highlightSearchTerms(freelancer.location, searchTerm)}</p>
-                <p class="experience">${highlightSearchTerms(freelancer.experience, searchTerm)} experience</p>
+                <p class="experience">${highlightSearchTerms(freelancer.experience, searchTerm)}</p>
                 <button class="hire-btn" data-id="${freelancer.id}">Contact</button>
             `;
+            
+            // Add event listener for hire button
+            const hireBtn = article.querySelector('.hire-btn');
+            hireBtn.addEventListener('click', () => {
+                alert(`Contact feature for "${freelancer.name}" will be implemented in the next phase.`);
+                // Future implementation: handleFreelancerContact(freelancer.id);
+            });
+            
             freelancersList.appendChild(article);
         });
     }
 
-    /*functions for testing*/
-window.highlightSearchTerms = highlightSearchTerms;
-window.filterBudget = filterBudget;
-window.filterDuration = filterDuration;
-window.filterRate = filterRate;
-window.filterExperience = filterExperience;
+    // For testing purposes
+    window.highlightSearchTerms = highlightSearchTerms;
+    window.filterBudget = filterBudget;
+    window.filterDuration = filterDuration;
+    window.filterRate = filterRate;
+    window.filterExperience = filterExperience;
 });

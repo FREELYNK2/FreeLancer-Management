@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Milestone Details</title>
-  <link rel="stylesheet" href="../styles/style2.css" />
+  <title>Milestone Dashboard</title>
+  <link rel="stylesheet" href="../pages/styles/style2.css" />
 </head>
 <body>
   <header>
-    <h1>Milestone Details</h1>
+    <h1>Milestone Dashboard</h1>
     <nav>
       <a href="account.html">← Back</a>
     </nav>
@@ -16,17 +16,27 @@
 
   <main>
     <section>
-      <h2>Milestone: Wireframe Design</h2>
-      <p><strong>Description:</strong> Creation of mobile wireframes for the new app interface.</p>
-      <p><strong>Status:</strong> <span class="badge in-progress">Awaiting Payment</span></p>
-      <p><strong>Due Date:</strong> April 20, 2025</p>
-      <p><strong>Amount:</strong> $200</p>
+      <form>
+        <label for="status-filter">Filter by Status:</label>
+        <select id="status-filter">
+          <option value="all">All</option>
+          <option value="completed">Completed</option>
+          <option value="in-progress">In Progress</option>
+          <option value="awaiting">Awaiting Payment</option>
+        </select>
+        <button type="button" id="export-btn">Export CSV</button>
+        <button type="button" id="export-pdf">Export PDF</button>
+      </form>
+    </section>
 
-      <button id="simulate-pay">Simulate Payment</button>
-      <p id="payment-message"></p>
+    <section id="milestone-list">
+      <!-- Milestone cards will be rendered here -->
     </section>
   </main>
 
-  <script src="script2.js"></script>
+  <!-- jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script src="../pages/script2.js"></script>
 </body>
 </html>

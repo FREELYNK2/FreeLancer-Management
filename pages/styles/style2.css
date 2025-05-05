@@ -16,11 +16,19 @@ nav a {
   font-size: 0.95rem;
 }
 
-main section {
+.controls {
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+main section.milestone-card {
   background-color: white;
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
 }
 
 h2 {
@@ -37,11 +45,15 @@ h2 {
 }
 
 .in-progress {
-  background-color: #f0ad4e; /* Orange - Awaiting Payment */
+  background-color: #f0ad4e;
 }
 
 .active-progress {
-  background-color: #17a2b8; /* Blue - In Progress */
+  background-color: #17a2b8;
+}
+
+.completed {
+  background-color: #28a745;
 }
 
 button {
@@ -58,10 +70,4 @@ button {
 
 button:hover {
   background-color: #0056b3;
-}
-
-#payment-message {
-  margin-top: 1rem;
-  font-weight: bold;
-  color: green;
 }

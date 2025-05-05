@@ -5,26 +5,42 @@
   <title>Freelynk - My Account</title>
   <link rel="stylesheet" href="../styles/account.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script type="module" src="../pages/firebaseauth.js"></script>
+  <style>
+    .user-activities {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .activity-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    .activity-item {
+      padding: 10px;
+      margin: 8px 0;
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .activity-date {
+      font-weight: bold;
+      color: #333;
+      margin-top: 15px;
+    }
+  </style>
 </head>
 <body>
-  <!-- <header>
-    <nav>
-      <a href="Freelancing.html" class="nav-link">Home</a>
-      <a href="Freelancing.html#services" class="nav-link">Services</a>
-      <a href="Freelancing.html#contact" class="nav-link">Contact</a>
-      <a href="account.html" class="nav-link">About</a>
-    </nav>
-    <section class="hero">
-      <img src="../assets/newFreelynkLogo.png" alt="FreeLynk Logo" class="logo" />
-    </section>
-  </header> -->
-
   <main>
     <section id="dashboard" class="account-section">
-      <h2>Welcome, <span id="user-name">Client</span></h2>
-
+      <h2>Welcome, <span id="user-name">User</span></h2>
       <button id="logout-btn">Logout</button>
+
+      <section class="user-activities">
+        <h3>Your Activities</h3>
+        <div id="activitiesContainer"></div>
+      </section>
 
       <section class="account-actions">
         <h3>Account Options</h3>
@@ -34,66 +50,92 @@
           <li><a href="detailed_milestone.html">View All Projects</a></li>
         </ul>
       </section>
-
-      <!-- <section class="pending-projects">
-        <h3>Projects Awaiting Approval</h3>
-        <ul id="pending-projects-list">
-        </ul>
-      </section> -->
     </section>
   </main>
 
-  <!-- <footer class="site-footer">
-    <section class="footer-branding">
-      <h2 class="footer-logo">FREELYNK</h2>
-      <p class="tagline">Link. Work. Grow.</p>
-      <section class="social-icons">
-        <a href="#"><img src="https://img.icons8.com/ios-filled/24/ffffff/facebook.png" alt="Facebook" /></a>
-        <a href="#"><img src="https://img.icons8.com/ios-filled/24/ffffff/instagram-new.png" alt="Instagram" /></a>
-        <a href="#"><img src="https://img.icons8.com/ios-filled/24/ffffff/twitterx.png" alt="X" /></a>
-      </section>
-    </section>
-  </footer> -->
-
-  <script type="module">
-    import { auth, logoutUser } from "../pages/firebaseauth.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-
-    const db = getFirestore();
-
-    const userNameSpan = document.getElementById("user-name");
-    const projectsList = document.getElementById("pending-projects-list");
-    const logoutBtn = document.getElementById("logout-btn");
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        userNameSpan.textContent = user.displayName || user.email;
-
-        // Load pending projects for the current user
-        const q = query(collection(db, "projects"), where("clientId", "==", user.uid), where("status", "==", "pending"));
-        const querySnapshot = await getDocs(q);
-
-        if (querySnapshot.empty) {
-          projectsList.innerHTML = "<li>No pending projects.</li>";
-        } else {
-          querySnapshot.forEach((doc) => {
-            const project = doc.data();
-            const li = document.createElement("li");
-            li.textContent = `${project.title} – Waiting for freelancer approval`;
-            projectsList.appendChild(li);
-          });
-        }
-      } else {
-        // Not logged in
-        window.location.href = "login.html";
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load user activities
+      const activities = JSON.parse(localStorage.getItem('userActivities') || '[]');
+      const container = document.getElementById('activitiesContainer');
+      
+      if (activities.length === 0) {
+        container.innerHTML = '<p>No activities recorded yet.</p>';
+        return;
       }
-    });
 
-    logoutBtn.addEventListener("click", async () => {
-      await logoutUser();
-      window.location.href = "index.html";
+      // Group activities by date
+      const activitiesByDate = activities.reduce((groups, activity) => {
+        const date = new Date(activity.timestamp).toLocaleDateString();
+        if (!groups[date]) groups[date] = [];
+        groups[date].push(activity);
+        return groups;
+      }, {});
+
+      // Display activities
+      let html = '';
+      for (const [date, dailyActivities] of Object.entries(activitiesByDate)) {
+        html += `<p class="activity-date">${date}</p><ul class="activity-list">`;
+        
+        dailyActivities.forEach(activity => {
+          if (activity.type === 'hired_freelancer') {
+            html += `
+              <li class="activity-item">
+                Hired <strong>${activity.data.name}</strong> as ${activity.data.title}
+                <small>(${new Date(activity.timestamp).toLocaleTimeString()})</small>
+              </li>
+            `;
+          } else if (activity.type === 'added_skills') {
+            html += `
+              <li class="activity-item">
+                Added skills: <strong>${activity.data.skills.join(', ')}</strong>
+                <small>(${new Date(activity.timestamp).toLocaleTimeString()})</small>
+              </li>
+            `;
+          }
+        });
+        
+        html += '</ul>';
+      }
+      
+      container.innerHTML = html;
+
+      // Logout functionality
+      document.getElementById('logout-btn').addEventListener('click', function() {
+        localStorage.removeItem('userActivities');
+        window.location.href = 'index2.html';
+      });
     });
   </script>
+
+<section class="user-activities">
+  <h2>Your Activities</h2>
+  <div id="activitiesList"></div>
+</section>
+
+<script>
+  // Display activities
+  document.addEventListener('DOMContentLoaded', function() {
+    const activities = JSON.parse(localStorage.getItem('userActivities') || '[]');
+    const list = document.getElementById('activitiesList');
+    
+    if (activities.length === 0) {
+      list.innerHTML = '<p>No activities yet</p>';
+      return;
+    }
+
+    let html = '';
+    activities.forEach(activity => {
+      if (activity.type === 'hired') {
+        html += `<p>Hired ${activity.data.name} (${activity.data.title})</p>`;
+      }
+      if (activity.type === 'added_skills') {
+        html += `<p>Added skills: ${activity.data.skills.join(', ')}</p>`;
+      }
+    });
+    
+    list.innerHTML = html;
+  });
+</script>
 </body>
 </html>
