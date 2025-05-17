@@ -30,7 +30,7 @@ const db = getFirestore();
 const auth = getAuth();
 
 // ✅ Secure: only allow this UID
-const ADMIN_UID = "3LfQb9acJoOf9J0biWoY5kjv0ZB2"; // Replace with actual UID
+const ADMIN_UID = ["3LfQb9acJoOf9J0biWoY5kjv0ZB2","V0ovuDG7WXS5YtXfDjRm7vHVrAj2"]; // Replace with actual UID
 
 const usersTableBody = document.getElementById("usersTableBody");
 
@@ -91,12 +91,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "index.html";
-  } else if (user.uid !== ADMIN_UID) {
-    alert("Access denied. You are not authorized to view this page.");
-    signOut(auth).then(() => {
-      window.location.href = "index.html";
-    });
-  } else {
+  }  else {
     loadUsers();
   }
 });

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Freelynk - My Account</title>
-    <link rel="stylesheet" href="../pages/styles/account.css" />
+    <link rel="stylesheet" href="styles/account.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Add these right before your account.js script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -12,7 +12,7 @@
       // Initialize jsPDF in global scope
       window.jsPDF = window.jspdf.jsPDF;
     </script>
-    <script type="module" src="../accountScripts/account.js"></script>
+    <script type="module" src="accountScripts/account.js"></script>
     <style>
       :root {
         --primary: #4361ee;
@@ -432,6 +432,7 @@
       firebase.initializeApp(firebaseConfig);
     </script>
 
+<<<<<<< HEAD
     <script type="module" src="../accountScripts/auth.js"></script>
     <script type="module" src="../accountScripts/firestore.js"></script>
     <script type="module" src="../accountScripts/ui.js"></script>
@@ -440,5 +441,14 @@
     <script type="module" src="../accountScripts/account.js"></script>
     <script type="module" src="../accountScripts/export.js"></script>
     <script type="module" src="../accountScripts/payments.js"></script>
+=======
+    <script type="module" src="accountScripts/auth.js"></script>
+    <script type="module" src="accountScripts/firestore.js"></script>
+    <script type="module" src="accountScripts/ui.js"></script>
+    <script type="module" src="accountScripts/milestones.js"></script>
+    <script type="module" src="accountScripts/applications.js"></script>
+    <script type="module" src="accountScripts/account.js"></script>
+    <script type="module" src="accountScripts/export.js"></script>
+>>>>>>> bc66b9eff9fbfa3dc153455e61234300ea65b063
   </body>
 </html>
