@@ -91,12 +91,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "index.html";
-  } else if (user.uid !== ADMIN_UID) {
-    alert("Access denied. You are not authorized to view this page.");
-    signOut(auth).then(() => {
-      window.location.href = "index.html";
-    });
-  } else {
+  }  else {
     loadUsers();
   }
 });
