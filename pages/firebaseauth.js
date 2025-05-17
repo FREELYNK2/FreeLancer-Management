@@ -27,7 +27,7 @@ const auth = getAuth();
 const db = getFirestore();
 const provider = new GoogleAuthProvider();
 
-const adminEmails = "vhulendamashamba4@gmail.com";
+const adminEmails = ["vhulendamashamba4@gmail.com","2333776@students.wits.ac.za"];
 
 // Sign-In Function
 async function handleGoogleSignIn() {
