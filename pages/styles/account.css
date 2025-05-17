@@ -1,6 +1,6 @@
 /* GLOBAL STYLES */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f9f9f9;
   color: #333;
   margin: 0;
@@ -174,4 +174,65 @@ nav a.active {
   #pending-projects-list li {
     padding: 0.5rem 0;
   }
+}
+
+/* Milestone status indicators */
+.milestone .status {
+  font-weight: bold;
+}
+.milestone .status.pending {
+  color: orange;
+}
+.milestone .status.submitted {
+  color: blue;
+}
+.milestone .status.approved {
+  color: green;
+}
+
+/* Submission form */
+.submission {
+  background: #f5f5f5;
+  padding: 10px;
+  margin-top: 8px;
+  border-radius: 4px;
+}
+
+/* Form container styling */
+.modal {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 600px;
+  padding: 2rem;
+  position: relative;
+  border: 1px solid #e1e5eb;
+}
+
+/* Form header */
+.modal h3 {
+  color: #2d3748;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Fieldset styling */
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+legend {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #4a5568;
+  margin-bottom: 1rem;
+  display: block;
+  width: 100%;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
 }

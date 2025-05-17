@@ -1,66 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="../styles/admin.css">
-</head>
-<body>
+    <link rel="stylesheet" href="../styles/admin.css" />
+  </head>
+  <body>
     <header>
-        <h1>User Management</h1>
-        <button id="logoutBtn">Logout</button>
+      <h1>User Management</h1>
+      <button id="logoutBtn">Logout</button>
     </header>
-    
+
     <main>
-        <section>
-            <h2>User Controls</h2>
-            <form class="search-form">
-                <label for="searchInput">Search:</label>
-                <input type="text" id="searchInput" placeholder="Search users...">
-                
-                <label for="roleFilter">Filter by role:</label>
-                <select id="roleFilter">
-                    <option value="all">All Roles</option>
-                    <option value="client">Clients</option>
-                    <option value="freelancer">Freelancers</option>
-                    <option value="admin">Admins</option>
-                </select>
-            </form>
-        </section>
-        
-        <section>
-            <table>
-                <caption>Registered Users</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Role</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Joined</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="usersTableBody">
-                    <!-- Users will be loaded here -->
-                </tbody>
-            </table>
-        </section>
+      <section>
+        <h2>User Controls</h2>
+        <form class="search-form">
+          <label for="searchInput">Search:</label>
+          <input type="text" id="searchInput" placeholder="Search users..." />
+
+          <label for="roleFilter">Filter by role:</label>
+          <select id="roleFilter">
+            <option value="all">All Roles</option>
+            <option value="client">Clients</option>
+            <option value="freelancer">Freelancers</option>
+            <option value="admin">Admins</option>
+          </select>
+        </form>
+      </section>
+
+      <section>
+        <table>
+          <caption>
+            Registered Users
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Role</th>
+              <th scope="col">Status</th>
+              <th scope="col">Joined</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <!-- Users will be loaded here -->
+          </tbody>
+        </table>
+      </section>
     </main>
 
     <dialog id="confirmDialog">
-        <form method="dialog">
-            <p id="dialogMessage">Are you sure you want to perform this action?</p>
-            <menu>
-                <button id="confirmBtn" value="confirm">Confirm</button>
-                <button value="cancel">Cancel</button>
-            </menu>
-        </form>
+      <form method="dialog">
+        <p id="dialogMessage">Are you sure you want to perform this action?</p>
+        <menu>
+          <button id="confirmBtn" value="confirm">Confirm</button>
+          <button value="cancel">Cancel</button>
+        </menu>
+      </form>
     </dialog>
 
-    <script type="module" src="../firebaseauth.js"></script>
-    <script type="module" src="../admin.js"></script>
-
-</body>
+    <script type="module" src="firebaseauth.js"></script>
+    <script type="module" src="admin.js"></script>
+  </body>
 </html>

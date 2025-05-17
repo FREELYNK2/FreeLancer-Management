@@ -1,141 +1,442 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Freelynk - My Account</title>
-  <link rel="stylesheet" href="../styles/account.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    .user-activities {
-      margin: 20px 0;
-      padding: 15px;
-      background: #f8f9fa;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .activity-list {
-      list-style-type: none;
-      padding: 0;
-    }
-    .activity-item {
-      padding: 10px;
-      margin: 8px 0;
-      background: white;
-      border-radius: 4px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .activity-date {
-      font-weight: bold;
-      color: #333;
-      margin-top: 15px;
-    }
-  </style>
-</head>
-<body>
-  <main>
-    <section id="dashboard" class="account-section">
-      <h2>Welcome, <span id="user-name">User</span></h2>
-      <button id="logout-btn">Logout</button>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Freelynk - My Account</title>
+    <link rel="stylesheet" href="../pages/styles/account.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Add these right before your account.js script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script>
+      // Initialize jsPDF in global scope
+      window.jsPDF = window.jspdf.jsPDF;
+    </script>
+    <script type="module" src="../accountScripts/account.js"></script>
+    <style>
+      .user-activities {
+        margin: 20px 0;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
 
-      <section class="user-activities">
-        <h3>Your Activities</h3>
-        <div id="activitiesContainer"></div>
+      .activity-list {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      .activity-item {
+        padding: 10px;
+        margin: 8px 0;
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .application-card,
+      .job-card {
+        background: white;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .tab-btn {
+        padding: 0.5rem 1rem;
+        background: none;
+        border: none;
+        color: #4285f4;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+      }
+
+      .tab-btn.active {
+        border-bottom-color: #4285f4;
+        font-weight: bold;
+      }
+
+      .activity-content {
+        margin-top: 1rem;
+      }
+
+      .activity-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .status-pending {
+        color: #ff9800;
+      }
+
+      .status-accepted {
+        color: #4caf50;
+      }
+
+      .status-rejected {
+        color: #f44336;
+      }
+    </style>
+
+    <style>
+      .status-pending {
+        color: orange;
+      }
+      .status-approved {
+        color: green;
+      }
+      .status-rejected {
+        color: red;
+      }
+
+      .modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+      }
+
+      .applicant {
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #eee;
+      }
+
+      /* Form container styling */
+
+      /* Form header */
+      .modal h3 {
+        color: #2d3748;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      /* Fieldset styling */
+      fieldset {
+        border: none;
+        padding: 0;
+        margin: 0 0 1.5rem 0;
+      }
+
+      legend {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #4a5568;
+        margin-bottom: 1rem;
+        display: block;
+        width: 100%;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      /* Input fields */
+      input[type="text"],
+      input[type="date"],
+      input[type="number"],
+      input[type="file"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        color: #4a5568;
+        background-color: #f8fafc;
+        transition: all 0.2s ease;
+      }
+
+      input[type="text"]:focus,
+      input[type="date"]:focus,
+      input[type="number"]:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+        background-color: #ffffff;
+      }
+
+      /* File input customization */
+      input[type="file"] {
+        padding: 0.5rem;
+        background: #ffffff;
+      }
+
+      /* Textarea specific styling */
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      /* Label styling */
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #4a5568;
+      }
+
+      /* Base button styling */
+      button,
+      input[type="submit"] {
+        background-color: #4299e1;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      button:hover,
+      input[type="submit"]:hover {
+        background-color: #b0e0e6;
+        transform: translateY(-1px);
+      }
+
+      button:active,
+      input[type="submit"]:active {
+        transform: translateY(0);
+      }
+
+      button:disabled,
+      input[type="submit"]:disabled {
+        background-color: #a0aec0;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* Secondary buttons */
+      .close-modal,
+      .reject-btn {
+        background-color: #e53e3e;
+      }
+
+      .close-modal:hover,
+      .reject-btn:hover {
+        background-color: #c53030;
+      }
+
+      /* Button groups */
+      .action-buttons,
+      .approval-buttons {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        padding: 0;
+        list-style: none;
+      }
+
+      .action-buttons li,
+      .approval-buttons li {
+        flex: 1;
+      }
+
+      /* Milestone and application cards */
+      .milestone,
+      .application-card,
+      .job-card {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border: 1px solid #edf2f7;
+        transition: all 0.2s ease;
+      }
+
+      .milestone:hover,
+      .application-card:hover,
+      .job-card:hover {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+
+      /* Status indicators */
+      .status-pending {
+        color: #ed8936;
+      }
+
+      .status-approved {
+        color: #38a169;
+      }
+
+      .status-rejected {
+        color: #e53e3e;
+      }
+
+      .status-submitted {
+        color: #4299e1;
+      }
+
+      /* Submission details */
+      .submission-details {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+        border-left: 4px solid #4299e1;
+      }
+
+      /* File list styling */
+      .submission-files,
+      .file-list {
+        list-style: none;
+        padding: 0;
+        margin: 0.5rem 0;
+      }
+
+      .submission-files li,
+      .file-list li {
+        padding: 0.5rem;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .submission-files li:last-child,
+      .file-list li:last-child {
+        border-bottom: none;
+      }
+
+      .submission-files a,
+      .file-list a {
+        color: #3182ce;
+        text-decoration: none;
+      }
+
+      .submission-files a:hover,
+      .file-list a:hover {
+        text-decoration: underline;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .modal {
+          width: 95%;
+          padding: 1.5rem;
+        }
+
+        .action-buttons,
+        .approval-buttons {
+          flex-direction: column;
+        }
+      }
+
+      /* Animation for modal appearance */
+      @keyframes modalFadeIn {
+        from {
+          opacity: 0;
+          transform: translate(-50%, -60%);
+        }
+        to {
+          opacity: 1;
+          transform: translate(-50%, -50%);
+        }
+      }
+
+      .modal {
+        animation: modalFadeIn 0.3s ease-out forwards;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section id="dashboard" class="account-section">
+        <h2>Welcome, <strong id="user-name">User</strong></h2>
+        <button id="logout-btn">Logout</button>
+        <button id="export-pdf" class="export-btn">
+          <i class="fas fa-file-pdf"></i> Export to PDF
+        </button>
+
+        <section class="user-activities">
+          <h3>Your Activities</h3>
+          <section id="activitiesContainer">
+            <menu class="activity-tabs">
+              <button class="tab-btn active" data-tab="all">
+                All Activities
+              </button>
+              <button class="tab-btn" data-tab="applied">Jobs Applied</button>
+              <button class="tab-btn" data-tab="posted">Jobs Posted</button>
+              <button class="tab-btn" data-tab="hires">
+                Freelancers Hired
+              </button>
+            </menu>
+
+            <section id="allActivities" class="activity-content">
+              <ul class="activity-list" id="allActivitiesList"></ul>
+            </section>
+
+            <section id="appliedActivities" class="activity-content hidden">
+              <ul class="activity-list" id="applicationsList"></ul>
+            </section>
+
+            <section id="postedActivities" class="activity-content hidden">
+              <ul class="activity-list" id="postedJobsList"></ul>
+            </section>
+
+            <section id="hiresActivities" class="activity-content hidden">
+              <ul class="activity-list" id="hiresList"></ul>
+            </section>
+          </section>
+        </section>
+
+        <!-- <section class="account-actions">
+          <h3>Account Options</h3>
+          <ul>
+            <li><a href="#">Manage Profile</a></li>
+            <li><a href="#">Post a New Project</a></li>
+            <li><a href="detailed_milestone.html">View All Projects</a></li>
+          </ul>
+        </section> -->
       </section>
+    </main>
 
-      <section class="account-actions">
-        <h3>Account Options</h3>
-        <ul>
-          <li><a href="#">Manage Profile</a></li>
-          <li><a href="#">Post a New Project</a></li>
-          <li><a href="detailed_milestone.html">View All Projects</a></li>
-        </ul>
-      </section>
-    </section>
-  </main>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Load user activities
-      const activities = JSON.parse(localStorage.getItem('userActivities') || '[]');
-      const container = document.getElementById('activitiesContainer');
-      
-      if (activities.length === 0) {
-        container.innerHTML = '<p>No activities recorded yet.</p>';
-        return;
-      }
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyCsf_gbE_xyqRoilwzgdDtEdGIpEDydntU",
+        authDomain: "freelynk-2758c.firebaseapp.com",
+        projectId: "freelynk-2758c",
+        storageBucket: "freelynk-2758c.appspot.com",
+        messagingSenderId: "995824578892",
+        appId: "1:995824578892:web:b5dc2dda5e160592681fe9",
+      };
+      firebase.initializeApp(firebaseConfig);
+    </script>
 
-      // Group activities by date
-      const activitiesByDate = activities.reduce((groups, activity) => {
-        const date = new Date(activity.timestamp).toLocaleDateString();
-        if (!groups[date]) groups[date] = [];
-        groups[date].push(activity);
-        return groups;
-      }, {});
-
-      // Display activities
-      let html = '';
-      for (const [date, dailyActivities] of Object.entries(activitiesByDate)) {
-        html += `<p class="activity-date">${date}</p><ul class="activity-list">`;
-        
-        dailyActivities.forEach(activity => {
-          if (activity.type === 'hired_freelancer') {
-            html += `
-              <li class="activity-item">
-                Hired <strong>${activity.data.name}</strong> as ${activity.data.title}
-                <small>(${new Date(activity.timestamp).toLocaleTimeString()})</small>
-              </li>
-            `;
-          } else if (activity.type === 'added_skills') {
-            html += `
-              <li class="activity-item">
-                Added skills: <strong>${activity.data.skills.join(', ')}</strong>
-                <small>(${new Date(activity.timestamp).toLocaleTimeString()})</small>
-              </li>
-            `;
-          }
-        });
-        
-        html += '</ul>';
-      }
-      
-      container.innerHTML = html;
-
-      // Logout functionality
-      document.getElementById('logout-btn').addEventListener('click', function() {
-        localStorage.removeItem('userActivities');
-        window.location.href = 'index2.html';
-      });
-    });
-  </script>
-
-<section class="user-activities">
-  <h2>Your Activities</h2>
-  <div id="activitiesList"></div>
-</section>
-
-<script>
-  // Display activities
-  document.addEventListener('DOMContentLoaded', function() {
-    const activities = JSON.parse(localStorage.getItem('userActivities') || '[]');
-    const list = document.getElementById('activitiesList');
-    
-    if (activities.length === 0) {
-      list.innerHTML = '<p>No activities yet</p>';
-      return;
-    }
-
-    let html = '';
-    activities.forEach(activity => {
-      if (activity.type === 'hired') {
-        html += `<p>Hired ${activity.data.name} (${activity.data.title})</p>`;
-      }
-      if (activity.type === 'added_skills') {
-        html += `<p>Added skills: ${activity.data.skills.join(', ')}</p>`;
-      }
-    });
-    
-    list.innerHTML = html;
-  });
-</script>
-</body>
+    <script type="module" src="../accountScripts/auth.js"></script>
+    <script type="module" src="../accountScripts/firestore.js"></script>
+    <script type="module" src="../accountScripts/ui.js"></script>
+    <script type="module" src="../accountScripts/milestones.js"></script>
+    <script type="module" src="../accountScripts/applications.js"></script>
+    <script type="module" src="../accountScripts/account.js"></script>
+    <script type="module" src="../accountScripts/export.js"></script>
+  </body>
 </html>
