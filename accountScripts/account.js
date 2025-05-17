@@ -8,6 +8,12 @@ import {
   loadPostedJobs,
 } from "../accountScripts/applications.js";
 import { setupTabs } from "../accountScripts/ui.js";
+import { showPaymentsHistory } from "../accountScripts/payments.js";
+
+const homeButton = document.getElementById("home");
+homeButton.addEventListener("click", () => {
+  window.location.href = "freelancing.html";
+});
 
 document.addEventListener("DOMContentLoaded", function () {
   setupAuthListener(async (user) => {
@@ -27,6 +33,9 @@ document.addEventListener("DOMContentLoaded", function () {
     await Promise.all([loadApplications(user.uid), loadPostedJobs(user.uid)]);
     setupTabs();
   });
+  document
+    .getElementById("viewPayments")
+    ?.addEventListener("click", showPaymentsHistory);
 });
 
 // PDF Export Function

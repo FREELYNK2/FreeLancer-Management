@@ -14,7 +14,9 @@ const initEventListeners = () => {
   }
 
   // Navigation
-  elements.homeBtn.addEventListener("click", () => showView("home"));
+  elements.homeBtn.addEventListener("click", () => {
+    window.location.href = "freelancing.html";
+  });
   elements.freelancerBtn.addEventListener("click", () =>
     showView("freelancer")
   );
@@ -116,6 +118,8 @@ const initEventListeners = () => {
       try {
         await submitApplication(jobId);
         alert("Application submitted! The client has been notified.");
+
+        window.location.href = "account.html";
       } catch (error) {
         alert(`Error: ${error.message}`);
       }

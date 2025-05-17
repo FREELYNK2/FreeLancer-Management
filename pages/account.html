@@ -14,119 +14,164 @@
     </script>
     <script type="module" src="../accountScripts/account.js"></script>
     <style>
-      .user-activities {
-        margin: 20px 0;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      :root {
+        --primary: #4361ee;
+        --primary-light: #4895ef;
+        --secondary: #3f37c9;
+        --dark: #1b263b;
+        --light: #f8f9fa;
+        --success: #4cc9f0;
+        --warning: #f8961e;
+        --danger: #f72585;
+        --gray: #adb5bd;
+        --white: #ffffff;
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
+      /* Base Container Styles */
+      .user-activities {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      /* Activity List */
       .activity-list {
-        list-style-type: none;
+        list-style: none;
         padding: 0;
+        margin: 0;
       }
 
       .activity-item {
-        padding: 10px;
-        margin: 8px 0;
-        background: white;
-        border-radius: 4px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
-
-      .application-card,
-      .job-card {
-        background: white;
-        padding: 15px;
-        margin: 10px 0;
+        padding: 1.25rem;
+        margin: 0.75rem 0;
+        background: var(--white);
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+        border-left: 4px solid var(--primary);
       }
 
-      .hidden {
-        display: none;
+      .activity-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Cards */
+      .application-card,
+      .job-card,
+      .milestone {
+        background: var(--white);
+        padding: 1.5rem;
+        margin: 1rem 0;
+        border-radius: 10px;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .application-card:hover,
+      .job-card:hover,
+      .milestone:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Tabs */
+      .activity-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
       }
 
       .tab-btn {
-        padding: 0.5rem 1rem;
-        background: none;
+        padding: 0.75rem 1.25rem;
+        background: transparent;
         border: none;
-        color: #4285f4;
-        border-bottom: 2px solid transparent;
+        color: var(--dark);
+        font-weight: 500;
+        border-radius: 6px;
         cursor: pointer;
+        transition: var(--transition);
       }
 
       .tab-btn.active {
-        border-bottom-color: #4285f4;
-        font-weight: bold;
+        background: var(--primary);
+        color: var(--white);
       }
 
-      .activity-content {
-        margin-top: 1rem;
+      .tab-btn:not(.active):hover {
+        background: rgba(67, 97, 238, 0.1);
       }
 
-      .activity-tabs {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        border-bottom: 1px solid #ddd;
+      /* Status Indicators */
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
       }
 
       .status-pending {
-        color: #ff9800;
+        color: var(--warning);
+        background-color: rgba(248, 150, 30, 0.1);
       }
 
-      .status-accepted {
-        color: #4caf50;
-      }
-
-      .status-rejected {
-        color: #f44336;
-      }
-    </style>
-
-    <style>
-      .status-pending {
-        color: orange;
-      }
       .status-approved {
-        color: green;
-      }
-      .status-rejected {
-        color: red;
+        color: var(--success);
+        background-color: rgba(76, 201, 240, 0.1);
       }
 
+      .status-rejected {
+        color: var(--danger);
+        background-color: rgba(247, 37, 133, 0.1);
+      }
+
+      .status-submitted {
+        color: var(--primary);
+        background-color: rgba(67, 97, 238, 0.1);
+      }
+
+      /* Modal Styles */
       .modal {
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        background: var(--white);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         z-index: 1000;
+        animation: modalFadeIn 0.3s ease-out forwards;
+        border: 1px solid rgba(0, 0, 0, 0.1);
       }
 
-      .applicant {
-        margin: 10px 0;
-        padding: 10px;
-        border: 1px solid #eee;
-      }
-
-      /* Form container styling */
-
-      /* Form header */
       .modal h3 {
-        color: #2d3748;
+        color: var(--dark);
         font-size: 1.5rem;
         margin-bottom: 1.5rem;
         font-weight: 600;
         text-align: center;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
       }
 
-      /* Fieldset styling */
+      /* Form Elements */
       fieldset {
         border: none;
         padding: 0;
@@ -136,15 +181,14 @@
       legend {
         font-size: 1rem;
         font-weight: 500;
-        color: #4a5568;
+        color: var(--dark);
         margin-bottom: 1rem;
         display: block;
         width: 100%;
         padding-bottom: 0.5rem;
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
       }
 
-      /* Input fields */
       input[type="text"],
       input[type="date"],
       input[type="number"],
@@ -152,199 +196,123 @@
       textarea,
       select {
         width: 100%;
-        padding: 0.75rem 1rem;
+        padding: 0.875rem 1rem;
         margin-bottom: 1rem;
-        border: 1px solid #e2e8f0;
+        border: 1px solid rgba(0, 0, 0, 0.1);
         border-radius: 8px;
         font-size: 1rem;
-        color: #4a5568;
-        background-color: #f8fafc;
-        transition: all 0.2s ease;
+        color: var(--dark);
+        background-color: var(--white);
+        transition: var(--transition);
       }
 
-      input[type="text"]:focus,
-      input[type="date"]:focus,
-      input[type="number"]:focus,
+      input:focus,
       textarea:focus,
       select:focus {
         outline: none;
-        border-color: #4299e1;
-        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
-        background-color: #ffffff;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
       }
 
-      /* File input customization */
-      input[type="file"] {
-        padding: 0.5rem;
-        background: #ffffff;
-      }
-
-      /* Textarea specific styling */
       textarea {
-        min-height: 120px;
+        min-height: 150px;
         resize: vertical;
       }
 
-      /* Label styling */
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #4a5568;
-      }
-
-      /* Base button styling */
-      button,
-      input[type="submit"] {
-        background-color: #4299e1;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 0.75rem 1.5rem;
-        font-size: 1rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
+      /* Buttons */
+      button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        gap: 0.5rem;
       }
 
-      button:hover,
-      input[type="submit"]:hover {
-        background-color: #b0e0e6;
-        transform: translateY(-1px);
+      .btn-primary {
+        background: var(--primary);
+        color: var(--white);
       }
 
-      button:active,
-      input[type="submit"]:active {
-        transform: translateY(0);
-      }
-
-      button:disabled,
-      input[type="submit"]:disabled {
-        background-color: #a0aec0;
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      /* Secondary buttons */
-      .close-modal,
-      .reject-btn {
-        background-color: #e53e3e;
-      }
-
-      .close-modal:hover,
-      .reject-btn:hover {
-        background-color: #c53030;
-      }
-
-      /* Button groups */
-      .action-buttons,
-      .approval-buttons {
-        display: flex;
-        gap: 0.75rem;
-        margin-top: 1rem;
-        padding: 0;
-        list-style: none;
-      }
-
-      .action-buttons li,
-      .approval-buttons li {
-        flex: 1;
-      }
-
-      /* Milestone and application cards */
-      .milestone,
-      .application-card,
-      .job-card {
-        background: #ffffff;
-        border-radius: 10px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        border: 1px solid #edf2f7;
-        transition: all 0.2s ease;
-      }
-
-      .milestone:hover,
-      .application-card:hover,
-      .job-card:hover {
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      .btn-primary:hover {
+        background: var(--secondary);
         transform: translateY(-2px);
       }
 
-      /* Status indicators */
-      .status-pending {
-        color: #ed8936;
+      .btn-secondary {
+        background: var(--light);
+        color: var(--dark);
       }
 
-      .status-approved {
-        color: #38a169;
+      .btn-secondary:hover {
+        background: #e9ecef;
       }
 
-      .status-rejected {
-        color: #e53e3e;
+      .btn-danger {
+        background: var(--danger);
+        color: var(--white);
       }
 
-      .status-submitted {
-        color: #4299e1;
+      .btn-danger:hover {
+        background: #d1145a;
       }
 
-      /* Submission details */
-      .submission-details {
-        background: #f8fafc;
-        border-radius: 8px;
-        padding: 1rem;
-        margin-top: 1rem;
-        border-left: 4px solid #4299e1;
+      button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none !important;
       }
 
-      /* File list styling */
-      .submission-files,
+      /* File Uploads */
       .file-list {
         list-style: none;
         padding: 0;
-        margin: 0.5rem 0;
+        margin: 1rem 0;
       }
 
-      .submission-files li,
       .file-list li {
-        padding: 0.5rem;
-        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        border-radius: 6px;
+        background: var(--light);
+        margin-bottom: 0.5rem;
       }
 
-      .submission-files li:last-child,
-      .file-list li:last-child {
-        border-bottom: none;
-      }
-
-      .submission-files a,
       .file-list a {
-        color: #3182ce;
+        color: var(--primary);
         text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
 
-      .submission-files a:hover,
       .file-list a:hover {
         text-decoration: underline;
       }
 
-      /* Responsive adjustments */
+      /* Responsive Adjustments */
       @media (max-width: 768px) {
         .modal {
           width: 95%;
-          padding: 1.5rem;
+          padding: 1.25rem;
         }
 
-        .action-buttons,
-        .approval-buttons {
+        .activity-tabs {
           flex-direction: column;
+        }
+
+        .tab-btn {
+          width: 100%;
         }
       }
 
-      /* Animation for modal appearance */
+      /* Animations */
       @keyframes modalFadeIn {
         from {
           opacity: 0;
@@ -356,8 +324,37 @@
         }
       }
 
-      .modal {
-        animation: modalFadeIn 0.3s ease-out forwards;
+      /* Utility Classes */
+      .hidden {
+        display: none;
+      }
+
+      .text-center {
+        text-align: center;
+      }
+
+      .mt-2 {
+        margin-top: 0.5rem;
+      }
+
+      .mb-4 {
+        margin-bottom: 1rem;
+      }
+
+      .flex {
+        display: flex;
+      }
+
+      .items-center {
+        align-items: center;
+      }
+
+      .justify-between {
+        justify-content: space-between;
+      }
+
+      .gap-4 {
+        gap: 1rem;
       }
     </style>
   </head>
@@ -366,6 +363,11 @@
       <section id="dashboard" class="account-section">
         <h2>Welcome, <strong id="user-name">User</strong></h2>
         <button id="logout-btn">Logout</button>
+
+        <button id="home" class="home-btn">
+          <i class="fas fa-file-pdf"></i> Home
+        </button>
+
         <button id="export-pdf" class="export-btn">
           <i class="fas fa-file-pdf"></i> Export to PDF
         </button>
@@ -379,9 +381,6 @@
               </button>
               <button class="tab-btn" data-tab="applied">Jobs Applied</button>
               <button class="tab-btn" data-tab="posted">Jobs Posted</button>
-              <button class="tab-btn" data-tab="hires">
-                Freelancers Hired
-              </button>
             </menu>
 
             <section id="allActivities" class="activity-content">
@@ -402,14 +401,16 @@
           </section>
         </section>
 
-        <!-- <section class="account-actions">
-          <h3>Account Options</h3>
-          <ul>
-            <li><a href="#">Manage Profile</a></li>
-            <li><a href="#">Post a New Project</a></li>
-            <li><a href="detailed_milestone.html">View All Projects</a></li>
-          </ul>
-        </section> -->
+        <section class="account-actions">
+          <h3>Payment Options</h3>
+          <menu>
+            <li>
+              <button id="viewPayments" type="button">
+                View Payment History
+              </button>
+            </li>
+          </menu>
+        </section>
       </section>
     </main>
 
@@ -438,5 +439,6 @@
     <script type="module" src="../accountScripts/applications.js"></script>
     <script type="module" src="../accountScripts/account.js"></script>
     <script type="module" src="../accountScripts/export.js"></script>
+    <script type="module" src="../accountScripts/payments.js"></script>
   </body>
 </html>
