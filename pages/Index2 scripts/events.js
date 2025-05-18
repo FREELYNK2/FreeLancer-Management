@@ -162,6 +162,33 @@ const initEventListeners = () => {
 
     renderFreelancers(filteredFreelancers);
   });
+
+  elements.freelancersList.addEventListener('click', async (e) => {
+  if (e.target.classList.contains('hire-btn')) {
+    const freelancerCard = e.target.closest('.freelancer-card');
+    const freelancerId = freelancerCard.dataset.id;
+    
+    try {
+      // Get freelancer data from Firestore
+      const freelancerRef = doc(db, "freelancers", freelancerId);
+      const freelancerSnap = await getDoc(freelancerRef);
+      
+      if (freelancerSnap.exists()) {
+        const freelancerData = freelancerSnap.data();
+        
+        if (freelancerData.email) {
+          // Redirect to email client
+          window.location.href = `mailto:${freelancerData.email}?subject=Job Opportunity from Freelynk`;
+        } else {
+          alert("This freelancer hasn't provided an email");
+        }
+      }
+    } catch (error) {
+      console.error("Error contacting freelancer:", error);
+      alert("Failed to contact freelancer");
+    }
+  }
+});
 };
 
 export { initEventListeners };
