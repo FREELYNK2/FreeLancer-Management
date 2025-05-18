@@ -116,3 +116,100 @@ export async function exportMilestonesCSV(jobId, jobTitle) {
     alert("Failed to export milestones as CSV");
   }
 }
+
+// Payment export functions
+export async function exportPaymentsPDF(
+  payments,
+  title = "Payment History",
+  userName = "User"
+) {
+  try {
+    // Check if jsPDF is available
+    if (!window.jspdf) {
+      throw new Error(
+        "PDF library not loaded. Please wait a moment and try again."
+      );
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Add header
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text(title, 105, 20, { align: "center" });
+
+    // Add metadata
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 30);
+    doc.text(`User: ${userName}`, 14, 35);
+
+    // Rest of the function remains the same...
+    const headers = [
+      [
+        "Date",
+        "Project",
+        "Milestone",
+        "Amount",
+        "Method",
+        "Status",
+        "Transaction ID",
+      ],
+    ];
+
+    const data = payments.map((payment) => [
+      formatDate(payment.paymentDate),
+      payment.jobTitle || "N/A",
+      payment.milestoneName || "N/A",
+      `ZAR ${payment.amount?.toFixed(2) || "0.00"}`,
+      payment.method || "Manual",
+      payment.status,
+      payment.transactionId || "N/A",
+    ]);
+
+    doc.autoTable({
+      head: headers,
+      body: data,
+      startY: 40,
+      // ... rest of autoTable configuration
+    });
+
+    doc.save(`Payments_${new Date().toISOString().slice(0, 10)}.pdf`);
+  } catch (error) {
+    console.error("PDF export failed:", error);
+    throw error; // Re-throw to handle in the calling function
+  }
+}
+export async function exportPaymentsCSV(payments, title = "Payment History") {
+  try {
+    let csvContent =
+      "Date,Project,Milestone,Amount,Method,Status,Transaction ID\n";
+
+    payments.forEach((payment) => {
+      csvContent +=
+        `"${formatDate(payment.paymentDate)}",` +
+        `"${(payment.jobTitle || "N/A").replace(/"/g, '""')}",` +
+        `"${(payment.milestoneName || "N/A").replace(/"/g, '""')}",` +
+        `"ZAR ${payment.amount?.toFixed(2) || "0.00"}",` +
+        `"${payment.method || "Manual"}",` +
+        `"${payment.status}",` +
+        `"${payment.transactionId || "N/A"}"\n`;
+    });
+
+    // Create download link
+    const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute(
+      "download",
+      `Payments_${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error("CSV export failed:", error);
+    alert(`Failed to export CSV: ${error.message}`);
+  }
+}
