@@ -59,6 +59,7 @@ const saveFreelancerProfile = async (formData, photoFile) => {
     location: formData.location,
     experience: `${formData.experience} years`,
     photo: photoURL,
+    email: auth.currentUser.email,
     userId: auth.currentUser?.uid,
     createdAt: new Date().toISOString(),
   };
