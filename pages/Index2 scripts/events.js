@@ -5,6 +5,11 @@ import {
   submitApplication,
 } from "../Index2 scripts/db.js";
 import { showView, showSection, showLoading } from "../Index2 scripts/ui.js";
+import {
+  doc,
+  getDoc,
+} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { db } from "../Index2 scripts/db.js";
 
 const initEventListeners = () => {
   // Verify essential elements exist
