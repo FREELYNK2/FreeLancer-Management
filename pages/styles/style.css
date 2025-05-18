@@ -113,7 +113,10 @@ nav.main-navigation button.active {
   color: white;
 }
 
-menu.action-buttons,
+menu.action-buttons {
+  display: none;
+}
+
 menu.freelancer-options,
 menu.client-options {
   display: flex;
