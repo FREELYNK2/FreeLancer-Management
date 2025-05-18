@@ -14,7 +14,9 @@ const initEventListeners = () => {
   }
 
   // Navigation
-  elements.homeBtn.addEventListener("click", () => showView("home"));
+   elements.homeBtn.addEventListener("click", () => {
+    window.location.href = "freelancing.html";
+  });
   elements.freelancerBtn.addEventListener("click", () =>
     showView("freelancer")
   );
