@@ -8,8 +8,23 @@ import {
   loadPostedJobs,
 } from "../accountScripts/applications.js";
 import { setupTabs } from "../accountScripts/ui.js";
+
+
 console.log("[Debug] Script loaded"); // Verify script is loading
 console.log("[Debug] Button exists:", !!document.getElementById("viewPayments")); // Check if button exists
+
+document.getElementById("viewPayments")?.addEventListener("click", async (e) => {
+  console.log("[Debug] Button clicked"); // Confirm click is registered
+  e.preventDefault();
+  
+  try {
+    console.log("[Debug] Calling showPaymentsHistory");
+    await showPaymentsHistory();
+  } catch (error) {
+    console.error("[Debug] Payment history error:", error);
+    alert("Debug: Error in payment history - check console");
+  }
+});
 
 document.addEventListener("DOMContentLoaded", function () {
   setupAuthListener(async (user) => {
