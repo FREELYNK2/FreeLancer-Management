@@ -8,6 +8,8 @@ import {
   loadPostedJobs,
 } from "../accountScripts/applications.js";
 import { setupTabs } from "../accountScripts/ui.js";
+console.log("[Debug] Script loaded"); // Verify script is loading
+console.log("[Debug] Button exists:", !!document.getElementById("viewPayments")); // Check if button exists
 
 document.addEventListener("DOMContentLoaded", function () {
   setupAuthListener(async (user) => {
