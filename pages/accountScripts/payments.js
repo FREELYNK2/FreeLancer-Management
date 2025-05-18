@@ -8,7 +8,10 @@ import {
 
 export async function showPaymentsHistory() {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) {
+    alert("Please log in to view payment history.");
+    return;
+  }
 
   const modal = createModal(
     "Payment History",
@@ -33,6 +36,7 @@ export async function showPaymentsHistory() {
              <th scope="col">Date</th>
              <th scope="col">Project</th>
              <th scope="col">Amount</th>
+             <th scope="col">Direction</th>
              <th scope="col">Method</th>
              <th scope="col">Status</th>
              <th scope="col">Actions</th>
@@ -43,122 +47,112 @@ export async function showPaymentsHistory() {
      </section>`
   );
 
-  // Load payments - simplified without role checks
-  const paymentsQuery = await db
-    .collection("payments")
-    .where("freelancerId", "==", user.uid)
-    .orderBy("paymentDate", "desc")
-    .get();
+  try {
+    // Get all payments where user is either the freelancer or client
+    const receivedPayments = db.collection("payments")
+      .where("freelancerId", "==", user.uid)
+      .orderBy("paymentDate", "desc")
+      .get();
 
-  const payments = paymentsQuery.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
-  const tbody = modal.querySelector("#paymentsBody");
+    const sentPayments = db.collection("payments")
+      .where("clientId", "==", user.uid)
+      .orderBy("paymentDate", "desc")
+      .get();
 
-  payments.forEach((payment) => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${formatDate(payment.paymentDate)}</td>
-      <td>${payment.jobTitle || "N/A"}</td>
-      <td>ZAR ${payment.amount?.toFixed(2) || "0.00"}</td>
-      <td>${payment.method || "Manual"}</td>
-      <td class="status-${payment.status.toLowerCase()}">${payment.status}</td>
-      <td><button class="view-receipt" type="button" data-payment-id="${
-        payment.id
-      }">View</button></td>
-    `;
-    tbody.appendChild(row);
-  });
+    // Wait for both queries to complete
+    const [receivedSnap, sentSnap] = await Promise.all([receivedPayments, sentPayments]);
+    
+    // Combine and sort all payments by date
+    const allPayments = [
+      ...receivedSnap.docs.map(doc => ({ ...doc.data(), id: doc.id, type: 'received' })),
+      ...sentSnap.docs.map(doc => ({ ...doc.data(), id: doc.id, type: 'sent' }))
+    ].sort((a, b) => b.paymentDate - a.paymentDate);
 
-  // Export handlers
-  modal
-    .querySelector("#export-payments-pdf")
-    .addEventListener("click", async () => {
-      try {
-        // Re-fetch payments to ensure we have fresh data
-        const paymentsQuery = await db
-          .collection("payments")
-          .where("freelancerId", "==", user.uid)
-          .orderBy("paymentDate", "desc")
-          .get();
+    const tbody = modal.querySelector("#paymentsBody");
 
-        const payments = paymentsQuery.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        await exportPaymentsPDF(payments, "My Payment History");
-      } catch (error) {
-        console.error("Export failed:", error);
-        alert("Failed to export payments. Please try again.");
-      }
-    });
-
-  modal
-    .querySelector("#export-payments-csv")
-    .addEventListener("click", async () => {
-      try {
-        // Re-fetch payments to ensure we have fresh data
-        const paymentsQuery = await db
-          .collection("payments")
-          .where("freelancerId", "==", user.uid)
-          .orderBy("paymentDate", "desc")
-          .get();
-
-        const payments = paymentsQuery.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        await exportPaymentsCSV(payments, "My Payment History");
-      } catch (error) {
-        console.error("Export failed:", error);
-        alert("Failed to export payments. Please try again.");
-      }
-    });
-
-  // Print functionality
-  modal.querySelector("#printPayments").addEventListener("click", () => {
-    const printContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Payment History - ${user.displayName}</title>
-          <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            caption { font-size: 1.2em; font-weight: bold; margin-bottom: 10px; }
-            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; }
-            .status-completed { color: green; }
-            .status-pending { color: orange; }
-            .status-failed { color: red; }
-          </style>
-        </head>
-        <body>
-          <h1>Payment History</h1>
-          <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
-          <p><strong>User:</strong> ${user.displayName}</p>
-          ${modal.querySelector("table").outerHTML}
-        </body>
-      </html>
-    `;
-
-    const printWindow = window.open("", "_blank");
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    setTimeout(() => printWindow.print(), 500);
-  });
-
-  // Receipt viewing
-  modal.addEventListener("click", (e) => {
-    if (e.target.classList.contains("view-receipt")) {
-      showPaymentDetails(e.target.dataset.paymentId);
+    if (allPayments.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7">No payment history found</td></tr>`;
+    } else {
+      allPayments.forEach((payment) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${formatDate(payment.paymentDate)}</td>
+          <td>${payment.jobTitle || "N/A"}</td>
+          <td>ZAR ${payment.amount?.toFixed(2) || "0.00"}</td>
+          <td class="direction-${payment.type}">${payment.type === 'received' ? 'Received' : 'Sent'}</td>
+          <td>${payment.method || "Manual"}</td>
+          <td class="status-${payment.status.toLowerCase()}">${payment.status}</td>
+          <td><button class="view-receipt" type="button" data-payment-id="${payment.id}">View</button></td>
+        `;
+        tbody.appendChild(row);
+      });
     }
-  });
 
-  document.body.appendChild(modal);
+    // Update export handlers to use allPayments
+    modal.querySelector("#export-payments-pdf").addEventListener("click", async () => {
+      try {
+        await exportPaymentsPDF(allPayments, "My Payment History");
+      } catch (error) {
+        console.error("Export failed:", error);
+        alert("Failed to export payments. Please try again.");
+      }
+    });
+
+    modal.querySelector("#export-payments-csv").addEventListener("click", async () => {
+      try {
+        await exportPaymentsCSV(allPayments, "My Payment History");
+      } catch (error) {
+        console.error("Export failed:", error);
+        alert("Failed to export payments. Please try again.");
+      }
+    });
+
+    // Rest of your existing modal code (print, view receipt, etc.)...
+    modal.querySelector("#printPayments").addEventListener("click", () => {
+      const printContent = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Payment History - ${user.displayName}</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 20px; }
+              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+              caption { font-size: 1.2em; font-weight: bold; margin-bottom: 10px; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background-color: #f2f2f2; }
+              .status-completed { color: green; }
+              .status-pending { color: orange; }
+              .status-failed { color: red; }
+              .direction-received { color: green; }
+              .direction-sent { color: blue; }
+            </style>
+          </head>
+          <body>
+            <h1>Payment History</h1>
+            <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+            <p><strong>User:</strong> ${user.displayName}</p>
+            ${modal.querySelector("table").outerHTML}
+          </body>
+        </html>
+      `;
+      const printWindow = window.open("", "_blank");
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      setTimeout(() => printWindow.print(), 500);
+    });
+
+    modal.addEventListener("click", (e) => {
+      if (e.target.classList.contains("view-receipt")) {
+        showPaymentDetails(e.target.dataset.paymentId);
+      }
+    });
+
+    document.body.appendChild(modal);
+
+  } catch (error) {
+    console.error("Error loading payment history:", error);
+    alert("Failed to load payment history. Please try again.");
+  }
 }
 
 export async function showPaymentDetails(paymentId) {
