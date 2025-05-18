@@ -1,6 +1,7 @@
 import { db, storage } from "../accountScripts/auth.js";
 import { formatDate, createModal, showError } from "../accountScripts/ui.js";
 import { exportMilestonesPDF, exportMilestonesCSV } from "./export.js";
+import { recordPayment } from "../accountScripts/firestore.js";
 
 export async function showMilestonesModal(
   jobId,
@@ -68,6 +69,7 @@ export async function showMilestonesModal(
         let submissionHtml = "";
         let actionButtons = "";
         let feedbackHtml = "";
+        let paymentButton = "";
 
         // Show feedback if available
         if (milestone.clientFeedback || milestone.rejectionReason) {
@@ -137,32 +139,97 @@ export async function showMilestonesModal(
           }
         }
 
+        // Add payment button for approved milestones
+        if (milestone.status === "Approved And Paid") {
+          paymentButton = `
+            <button class="view-payment" data-job-id="${jobId}" data-milestone-id="${doc.id}">
+              View Payment
+            </button>
+          `;
+        }
+
         item.innerHTML = `
-          <article class="milestone-info">
+        <article class="milestone-info">
+          <header>
             <h4>${milestone.name}</h4>
             <p>Due: ${formatDate(milestone.dueDate)}</p>
             <p>Amount: ZAR ${milestone.amount?.toFixed(2) || "0.00"}</p>
             <p>Status: <em class="status-${milestone.status}">${
           milestone.status
         }</em></p>
-          </article>
+          </header>
+          
+          ${
+            milestone.status === "changes_requested"
+              ? `
+          <section class="feedback-notice">
+            <h5>Client Feedback:</h5>
+            <blockquote>${milestone.rejectionReason}</blockquote>
+            <button class="resubmit-btn" data-job-id="${jobId}" data-milestone-id="${doc.id}">
+              Resubmit Work
+            </button>
+          </section>`
+              : ""
+          }
+          
+          ${
+            milestone.status === "Approved And Paid"
+              ? `
+          <footer>
+            <button class="view-payment" data-job-id="${jobId}" data-milestone-id="${doc.id}">
+              View Payment
+            </button>
+          </footer>`
+              : ""
+          }
+          
           ${submissionHtml}
           ${feedbackHtml}
           ${actionButtons}
+          
           ${
-            milestone.status === "pending" && isFreelancerView
-              ? `<button class="submit-work" data-job-id="${jobId}" data-milestone-id="${doc.id}">
-              Submit Work
-            </button>`
+            (milestone.status === "pending" ||
+              milestone.status === "changes_requested") &&
+            isFreelancerView
+              ? `
+          <menu class="submission-actions">
+            <li>
+              <button class="submit-work" data-job-id="${jobId}" data-milestone-id="${
+                  doc.id
+                }">
+                ${
+                  milestone.status === "changes_requested"
+                    ? "Resubmit Work"
+                    : "Submit Work"
+                }
+              </button>
+            </li>
+          </menu>`
               : ""
           }
-        `;
+        </article>
+      `;
+
+        const resubmitBtn = item.querySelector(".resubmit-btn");
+        if (resubmitBtn) {
+          resubmitBtn.addEventListener("click", () => {
+            showSubmissionForm(jobId, doc.id);
+          });
+        }
 
         // Handle work submission button
         const submitBtn = item.querySelector(".submit-work");
         if (submitBtn) {
           submitBtn.addEventListener("click", () => {
             showSubmissionForm(jobId, doc.id);
+          });
+        }
+
+        // Handle payment view button
+        const paymentBtn = item.querySelector(".view-payment");
+        if (paymentBtn) {
+          paymentBtn.addEventListener("click", () => {
+            showPaymentDetails(jobId, doc.id);
           });
         }
 
@@ -208,6 +275,7 @@ export async function showMilestonesModal(
             amount: amount,
             status: "pending",
             createdAt: new Date().toISOString(),
+            jobTitle: jobTitle,
           };
 
           // Add to Firestore
@@ -231,6 +299,7 @@ export async function showMilestonesModal(
 
   // Handle approval/rejection with feedback
   modal.addEventListener("click", async (e) => {
+    // Replace the approval handler with this version
     if (e.target.classList.contains("approve-btn")) {
       const dialog = modal.querySelector(
         `#feedbackDialog-${e.target.dataset.milestoneId}`
@@ -243,16 +312,63 @@ export async function showMilestonesModal(
         const feedback = dialog.querySelector(
           `#feedbackText-${e.target.dataset.milestoneId}`
         ).value;
-        await db
+
+        // Get the milestone data
+        const milestoneRef = db
           .collection("jobs")
           .doc(e.target.dataset.jobId)
           .collection("milestones")
-          .doc(e.target.dataset.milestoneId)
-          .update({
-            status: "Approved And Paid",
-            approvedAt: new Date().toISOString(),
-            clientFeedback: feedback || "Approved without comments",
-          });
+          .doc(e.target.dataset.milestoneId);
+
+        const milestoneDoc = await milestoneRef.get();
+        const milestone = milestoneDoc.data();
+
+        // Get freelancerId either from milestone or application
+        let freelancerId = milestone.freelancerId;
+
+        if (!freelancerId) {
+          // Fallback to getting from application if not in milestone
+          const applicationsQuery = await db
+            .collection("applications")
+            .where("jobId", "==", e.target.dataset.jobId)
+            .where("status", "==", "approved")
+            .limit(1)
+            .get();
+
+          if (!applicationsQuery.empty) {
+            freelancerId = applicationsQuery.docs[0].data().freelancerId;
+          }
+        }
+
+        if (!freelancerId) {
+          throw new Error("Cannot approve - no freelancer assigned");
+        }
+
+        // Record payment
+        await recordPayment(
+          e.target.dataset.jobId,
+          e.target.dataset.milestoneId,
+          {
+            amount: milestone.amount,
+            method: "Manual",
+            transactionId: `PMT-${Date.now()}`,
+            jobTitle: milestone.jobTitle || "Untitled Job",
+            milestoneName: milestone.name,
+            freelancerId: freelancerId,
+            status: "completed",
+            paymentDate: new Date().toISOString(),
+          }
+        );
+
+        // Update milestone status
+        await milestoneRef.update({
+          status: "Approved And Paid",
+          approvedAt: new Date().toISOString(),
+          clientFeedback: feedback || "Approved without comments",
+          paymentStatus: "paid",
+          freelancerId: freelancerId, // Ensure this is saved
+        });
+
         await loadMilestones();
         dialog.close();
       };
@@ -270,27 +386,107 @@ export async function showMilestonesModal(
         const feedback = dialog.querySelector(
           `#feedbackText-${e.target.dataset.milestoneId}`
         ).value;
+
         await db
           .collection("jobs")
           .doc(e.target.dataset.jobId)
           .collection("milestones")
           .doc(e.target.dataset.milestoneId)
           .update({
-            status: "Pending",
+            status: "changes_requested", // New status
             rejectionReason:
               feedback || "Changes requested without specific feedback",
             rejectedAt: new Date().toISOString(),
+            // Clear previous submission to allow resubmission
+            submission: null,
           });
+
         await loadMilestones();
         dialog.close();
       };
-
       dialog.showModal();
     }
   });
 
   // Initial load
   await loadMilestones();
+  document.body.appendChild(modal);
+}
+
+export async function showPaymentDetails(jobId, milestoneId) {
+  const paymentsQuery = await db
+    .collection("payments")
+    .where("jobId", "==", jobId)
+    .where("milestoneId", "==", milestoneId)
+    .orderBy("paymentDate", "desc")
+    .get();
+
+  if (paymentsQuery.empty) {
+    alert("No payment records found for this milestone");
+    return;
+  }
+
+  const payment = paymentsQuery.docs[0].data();
+  const modal = createModal(
+    "Payment Details",
+    `<table>
+       <caption>Payment Receipt</caption>
+       <tbody>
+         <tr>
+           <th scope="row">Transaction ID</th>
+           <td>${payment.transactionId || "N/A"}</td>
+         </tr>
+         <tr>
+           <th scope="row">Date</th>
+           <td>${formatDate(payment.paymentDate)}</td>
+         </tr>
+         <tr>
+           <th scope="row">Amount</th>
+           <td>ZAR ${payment.amount?.toFixed(2) || "0.00"}</td>
+         </tr>
+         <tr>
+           <th scope="row">Method</th>
+           <td>${payment.method || "Manual"}</td>
+         </tr>
+         <tr>
+           <th scope="row">Status</th>
+           <td class="status-${payment.status.toLowerCase()}">${
+      payment.status
+    }</td>
+         </tr>
+       </tbody>
+     </table>
+     <button type="button" class="print-payment">Print Receipt</button>`
+  );
+
+  // Print functionality
+  modal.querySelector(".print-payment").addEventListener("click", () => {
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Payment Receipt - ${payment.transactionId}</title>
+          <style>
+            body { font-family: Arial; margin: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            caption { font-size: 1.2em; font-weight: bold; margin-bottom: 10px; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            .status-completed { color: green; }
+          </style>
+        </head>
+        <body>
+          ${modal.querySelector("table").outerHTML}
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open("", "_blank");
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    setTimeout(() => printWindow.print(), 500);
+  });
+
   document.body.appendChild(modal);
 }
 
