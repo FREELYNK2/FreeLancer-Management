@@ -15,7 +15,7 @@ const initEventListeners = () => {
 
 // Get the button element
  elements.homeBtn.addEventListener("click", () => {
-    window.location.href = "freelancing.html";
+    window.location.href = "Freelancing.html";
   });
   
   elements.freelancerBtn.addEventListener("click", () =>
