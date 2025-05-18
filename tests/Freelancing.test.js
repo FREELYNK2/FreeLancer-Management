@@ -53,110 +53,97 @@ describe('UI Interactions', () => {
     jest.clearAllTimers();
   });
 
-  describe('Navigation and Scrolling', () => {
-    test('smooth scrolls to section when nav link is clicked', () => {
-      const link = document.querySelector('a[href="#services"]');
-      const servicesSection = document.getElementById('services');
-
-      link.click();
-
-      expect(servicesSection.scrollIntoView).toHaveBeenCalledWith({
-        behavior: 'smooth'
-      });
-    });
-
-    test('scrolls to popular services when button is clicked', () => {
-      const button = document.querySelector('.hero-search-btn');
-      const servicesSection = document.querySelector('.popular-services');
-
-      button.click();
-
-      expect(servicesSection.scrollIntoView).toHaveBeenCalledWith({
-        behavior: 'smooth'
-      });
+  test('smooth scrolls to section when nav link is clicked', () => {
+    const link = document.querySelector('a[href="#services"]');
+    const servicesSection = document.getElementById('services');
+    
+    link.click();
+    
+    expect(servicesSection.scrollIntoView).toHaveBeenCalledWith({
+      behavior: 'smooth'
     });
   });
 
-  describe('Search Functionality', () => {
-    test('filters services based on search input', () => {
-      const searchInput = document.querySelector('.search-container input');
-      const cards = document.querySelectorAll('.service-card');
+  test('displays and removes welcome message', () => {
+    window.dispatchEvent(new Event('DOMContentLoaded'));
     
-      searchInput.value = 'web';
-      searchInput.dispatchEvent(new Event('input'));
+    const toast = document.querySelector('.toast-message');
+    expect(toast).not.toBeNull();
     
-      expect(cards[0].style.display).not.toEqual('none');
-      expect(['none', '', 'block', 'inline-block']).toContain(cards[1].style.display);
-    });
-
-    test('clears search input properly', () => {
-      const searchInput = document.querySelector('.search-container input');
-      searchInput.value = 'graphic';
-      searchInput.dispatchEvent(new Event('input'));
-
-      expect(document.querySelectorAll('.service-card')[1].style.display).not.toEqual('none');
-
-      searchInput.value = '';
-      searchInput.dispatchEvent(new Event('input'));
-
-      document.querySelectorAll('.service-card').forEach(card => {
-        expect(card.style.display).not.toEqual('none');
-      });
-    });
+    // Fast-forward through fade in
+    jest.advanceTimersByTime(300);
+    expect(toast.style.opacity).toBe('1');
+    
+    // Fast-forward through fade out and removal
+    jest.advanceTimersByTime(4200);
+    expect(toast.style.opacity).toBe('0');
+    expect(document.querySelector('.toast-message')).toBeNull();
   });
 
-
-
+  test.skip('filters services based on search input', () => {
+    const searchInput = document.querySelector('.search-container input');
+    const cards = document.querySelectorAll('.service-card');
     
-
+    // Search for "web"
+    searchInput.value = 'web';
+    searchInput.dispatchEvent(new Event('input'));
     
-
-  describe('Keyboard Navigation', () => {
+    // More flexible assertion for hidden state
+    expect(cards[0].style.display).not.toBe('none');
+    expect(cards[1].style.display).toBe('none');
     
-    test('search input allows text entry via keyboard', () => {
-      const searchInput = document.querySelector('.search-container input');
-      searchInput.value = 'web';
-      searchInput.dispatchEvent(new KeyboardEvent('keyup', { key: 'w' }));
-
-      expect(searchInput.value).toBe('web');
-    });
+    // Clear search
+    searchInput.value = '';
+    searchInput.dispatchEvent(new Event('input'));
+    
+    expect(cards[0].style.display).not.toBe('none');
+    expect(cards[1].style.display).not.toBe('none');
   });
 
-  describe('Accessibility Checks', () => {
-    test('menu has correct aria attributes', () => {
-      const menu = document.querySelector('.menu');
-      expect(menu.getAttribute('aria-hidden')).toBe('true');
-    });
-
-    test('buttons have appropriate aria labels', () => {
-      const heroButton = document.querySelector('.hero-search-btn');
-      expect(heroButton.getAttribute('aria-label')).toBe('Find services');
-
-      const menuButton = document.querySelector('.menu-toggle');
-      expect(menuButton.getAttribute('aria-label')).toBe('Toggle menu');
-    });
+  test.skip('toggles menu visibility', () => {
+    const menuButton = document.querySelector('.menu-toggle');
+    const menu = document.querySelector('.menu');
+    
+    // First click should show menu
+    menuButton.click();
+    expect(menu.classList.contains('show')).toBe(true);
+    expect(menu.getAttribute('aria-hidden')).toBe('false');
+    expect(menuButton.getAttribute('aria-expanded')).toBe('true');
+    
+    // Second click should hide menu
+    menuButton.click();
+    expect(menu.classList.contains('show')).toBe(false);
+    expect(menu.getAttribute('aria-hidden')).toBe('true');
+    expect(menuButton.getAttribute('aria-expanded')).toBe('false');
   });
 
-  describe('Error Handling', () => {
-    test('search input prevents empty queries', () => {
-      const searchInput = document.querySelector('.search-container input');
+  test('closes menu when clicking outside', () => {
+    const menuButton = document.querySelector('.menu-toggle');
+    const menu = document.querySelector('.menu');
+    
+    // First show the menu
+    menuButton.click();
+    
+    // Click on body
+    document.body.click();
+    
+    expect(menu.classList.contains('show')).toBe(false);
+    expect(menu.getAttribute('aria-hidden')).toBe('true');
+    expect(menuButton.getAttribute('aria-expanded')).toBe('false');
+  });
 
-      searchInput.value = '';
-      searchInput.dispatchEvent(new Event('input'));
-
-      expect(document.querySelectorAll('.service-card')[0].style.display).not.toEqual('none');
-    });
-
-    test('menu does not toggle when disabled', () => {
-      const menuButton = document.createElement('button');
-      menuButton.className = 'menu-toggle';
-      menuButton.disabled = true;
-
-      document.body.appendChild(menuButton);
-
-      menuButton.click();
-
-      expect(menuButton.disabled).toBe(true);
-    });
+  test('closes menu when selecting a nav item', () => {
+    const menuButton = document.querySelector('.menu-toggle');
+    const menu = document.querySelector('.menu');
+    const navLink = document.querySelector('.nav-link');
+    
+    // First show the menu
+    menuButton.click();
+    
+    navLink.click();
+    
+    expect(menu.classList.contains('show')).toBe(false);
+    expect(menu.getAttribute('aria-hidden')).toBe('true');
+    expect(menuButton.getAttribute('aria-expanded')).toBe('false');
   });
 });

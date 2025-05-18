@@ -70,18 +70,3 @@ if (menuToggle && menu) {
     });
   });
 }
-
-// Arrow Animation Control
-
-document.addEventListener("DOMContentLoaded", function() {
-  const lynkButton = document.getElementById('lynk-button');
-  const animatedArrow = document.getElementById('animated-arrow');
-
-  lynkButton.addEventListener('click', function() {
-    // Fade out the animated arrow after clicking the button
-    if (animatedArrow) {
-      animatedArrow.style.transition = "opacity 0.5s ease";
-      animatedArrow.style.opacity = "0";
-    }
-  });
-});

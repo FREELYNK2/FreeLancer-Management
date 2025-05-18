@@ -207,83 +207,83 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// pages/homeInteractions.js
 export function initSmoothScroll() {
-    document.querySelectorAll('nav a[href^="#"]').forEach(link =&gt; {
-      link.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        <span class="missing-if-branch" title="else path not taken" >E</span>if (target) {
-          target.scrollIntoView({ behavior: 'smooth' });
-        }
+  document.querySelectorAll('nav a[href^="#"]').forEach(link =&gt; {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+}
+&nbsp;
+export function showToastMessage() {
+  const toast = document.createElement('section');
+  toast.className = 'toast-message';
+  toast.textContent = 'Welcome to Freelynk!';
+  document.body.appendChild(toast);
+  setTimeout(() =&gt; toast.style.opacity = 1, 300);
+  setTimeout(() =&gt; toast.style.opacity = 0, 4000);
+  setTimeout(() =&gt; toast.remove(), 4500);
+}
+&nbsp;
+export function initSearchFilter() {
+  const searchInput = document.querySelector('.search-section input');
+  <span class="missing-if-branch" title="else path not taken" >E</span>if (searchInput) {
+    searchInput.addEventListener('input', () =&gt; {
+      const query = searchInput.value.toLowerCase();
+      const serviceCards = document.querySelectorAll('.service-card');
+      serviceCards.forEach(card =&gt; {
+        const title = card.querySelector('h3')?.textContent.toLowerCase() || <span class="branch-1 cbranch-no" title="branch not covered" >'';</span>
+        const description = card.querySelector('p')?.textContent.toLowerCase() || <span class="branch-1 cbranch-no" title="branch not covered" >'';</span>
+        card.style.display = (title.includes(query) || description.includes(query)) ? 'inline-block' : 'none';
       });
     });
   }
-  
-  export function showToastMessage() {
-    const toast = document.createElement('section');
-    toast.className = 'toast-message';
-    toast.textContent = 'Welcome to Freelynk!';
-    document.body.appendChild(toast);
-    setTimeout(() =&gt; toast.style.opacity = 1, 300);
-    setTimeout(() =&gt; toast.style.opacity = 0, 4000);
-    setTimeout(() =&gt; toast.remove(), 4500);
+}
+&nbsp;
+export function initScrollToServices() {
+  const searchBtn = document.querySelector('.hero-search-btn');
+  const scrollTarget = document.querySelector('.popular-services');
+  <span class="missing-if-branch" title="else path not taken" >E</span>if (searchBtn &amp;&amp; scrollTarget) {
+    searchBtn.addEventListener('click', () =&gt; {
+      scrollTarget.scrollIntoView({ behavior: 'smooth' });
+    });
   }
-  
-  export function initSearchFilter() {
-    const searchInput = document.querySelector('.search-section input');
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (searchInput) {
-      searchInput.addEventListener('input', () =&gt; {
-        const query = searchInput.value.toLowerCase();
-        const serviceCards = document.querySelectorAll('.service-card');
-        serviceCards.forEach(card =&gt; {
-          const title = card.querySelector('h3')?.textContent.toLowerCase() || <span class="branch-1 cbranch-no" title="branch not covered" >'';</span>
-          const description = card.querySelector('p')?.textContent.toLowerCase() || <span class="branch-1 cbranch-no" title="branch not covered" >'';</span>
-          card.style.display = (title.includes(query) || description.includes(query)) ? 'inline-block' : 'none';
-        });
+}
+&nbsp;
+export function initHamburgerMenu() {
+  const menuToggle = document.querySelector('.menu-toggle');
+  const menu = document.querySelector('.menu');
+&nbsp;
+  <span class="missing-if-branch" title="else path not taken" >E</span>if (menuToggle &amp;&amp; menu) {
+    menuToggle.addEventListener('click', (e) =&gt; {
+      e.stopPropagation();
+      menu.classList.toggle('show');
+    });
+&nbsp;
+    document.addEventListener('click', (e) =&gt; {
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (!menu.contains(e.target) &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >!menuToggle.contains(e.target))</span> {
+<span class="cstat-no" title="statement not covered" >        menu.classList.remove('show');</span>
+      }
+    });
+&nbsp;
+    menu.querySelectorAll('.nav-link').forEach(link =&gt; {
+      link.addEventListener('click', () =&gt; {
+        menu.classList.remove('show');
       });
-    }
+    });
   }
-  
-  export function initScrollToServices() {
-    const searchBtn = document.querySelector('.hero-search-btn');
-    const scrollTarget = document.querySelector('.popular-services');
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (searchBtn &amp;&amp; scrollTarget) {
-      searchBtn.addEventListener('click', () =&gt; {
-        scrollTarget.scrollIntoView({ behavior: 'smooth' });
-      });
-    }
-  }
-  
-  export function initHamburgerMenu() {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const menu = document.querySelector('.menu');
-  
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (menuToggle &amp;&amp; menu) {
-      menuToggle.addEventListener('click', (e) =&gt; {
-        e.stopPropagation();
-        menu.classList.toggle('show');
-      });
-  
-      document.addEventListener('click', (e) =&gt; {
-        <span class="missing-if-branch" title="if path not taken" >I</span>if (!menu.contains(e.target) &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >!menuToggle.contains(e.target))</span> {
-<span class="cstat-no" title="statement not covered" >          menu.classList.remove('show');</span>
-        }
-      });
-  
-      menu.querySelectorAll('.nav-link').forEach(link =&gt; {
-        link.addEventListener('click', () =&gt; {
-          menu.classList.remove('show');
-        });
-      });
-    }
-  }
-  </pre></td></tr></table></pre>
+}
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-24T02:14:30.791Z
+                at 2025-05-18T23:51:12.573Z
             </div>
         <script src="prettify.js"></script>
         <script>
