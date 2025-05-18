@@ -13,10 +13,12 @@ const initEventListeners = () => {
     return;
   }
 
-  // Navigation
-   elements.homeBtn.addEventListener("click", () => {
-    window.location.href = "freelancing.html";
-  });
+// Get the button element
+const homeButton = document.getElementById('home');
+homeButton.addEventListener('click', () => {
+  window.location.href = 'freelancing.html';
+});
+  
   elements.freelancerBtn.addEventListener("click", () =>
     showView("freelancer")
   );
