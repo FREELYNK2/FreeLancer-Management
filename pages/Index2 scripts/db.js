@@ -153,4 +153,5 @@ export {
   postNewJob,
   loadJobs,
   submitApplication,
+  db,
 };
