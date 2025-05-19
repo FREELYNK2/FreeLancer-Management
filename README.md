@@ -3,7 +3,9 @@
 Here is the Azure link
 https://nice-dune-05fc61f10.6.azurestaticapps.net
 Update: setting up Codecov integration
-
+trello link: https://trello.com/b/xzd8Pjdq/freelancer-management-platform
+discord link: https://discord.com/channels/1358878000418001128/1358878437879713842
+our discord server : https://discord.com/channels/1358823396816978020/1358909874880118824
 ## Project Structure
 
 The project is organized as follows:
