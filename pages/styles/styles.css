@@ -153,3 +153,87 @@ fieldset img {
   color: white; /* Change text color on hover */
   transform: scale(1.05); /* Slightly enlarge the button */
 }
+
+/* RESPONSIVE STYLES */
+@media (max-width: 1200px) {
+  .logo {
+    width: 700px;
+  }
+}
+
+@media (max-width: 992px) {
+  .logo {
+    width: 600px;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+    margin-top: -80px;
+  }
+  
+  p {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .logo {
+    width: 500px;
+  }
+  
+  h1 {
+    font-size: 1.6rem;
+    margin-top: -60px;
+  }
+  
+  p {
+    font-size: 1.1rem;
+  }
+  
+  .btn {
+    padding: 0.7rem 1.8rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .logo {
+    width: 350px;
+  }
+  
+  h1 {
+    font-size: 1.4rem;
+    margin-top: -40px;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    font-size: 1rem;
+  }
+  
+  .btn {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  nav {
+    margin-top: 1.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .logo {
+    width: 280px;
+  }
+  
+  h1 {
+    font-size: 1.2rem;
+  }
+  
+  p {
+    font-size: 0.9rem;
+  }
+  
+  main {
+    padding: 1rem;
+  }
+}
