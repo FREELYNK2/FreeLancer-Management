@@ -46,6 +46,9 @@ To run the project locally, make sure you have [Node.js and npm](https://nodejs.
 2. Install dependencies:
     ```bash
     npm install
+    npm install --save-dev @babel/core @babel/cli
+    npm install jest --global
+
 3. Start the development server:
     ```bash
     npm start
