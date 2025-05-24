@@ -1,13 +1,25 @@
+# FREELANCER MANAGEMENT PLATFORM
+
 [![codecov](https://codecov.io/gh/FREELYNK2/FreeLancer-Management/graph/badge.svg?token=AH4D3RWMYF)](https://codecov.io/gh/FREELYNK2/FreeLancer-Management)
 
-Here is the Azure link
-https://nice-dune-05fc61f10.6.azurestaticapps.net
-Update: setting up Codecov integration
+## Description
+A web-based platform that connects businesses with skilled professionals. Clients can post projects and milestones, while freelancers can apply for jobs, track progress, and manage payments—all in one place.
+
+## Features
+- 🔐 Authentication via Google, GitHub, and other providers (using Firebase)
+- 🧑‍💼 Clients can post jobs and define milestones
+- 👨‍💻 Freelancers can apply for and manage jobs
+- 💰 Stripe-based simulated payment system for testing transactions
+- 📊 Admin panel to oversee jobs, users, and progress
+- ☁️ Deployed on Azure for public access
+
+## Important Links
+Azure link: https://nice-dune-05fc61f10.6.azurestaticapps.net
 trello link: https://trello.com/b/xzd8Pjdq/freelancer-management-platform
 discord link: https://discord.com/channels/1358878000418001128/1358878437879713842
 our discord server : https://discord.com/channels/1358823396816978020/1358909874880118824
-## Project Structure
 
+## Project Structure
 The project is organized as follows:
 
 - **`pages/`** - Contains all HTML files (e.g., `index.html`, `Register.html`)
@@ -16,3 +28,23 @@ The project is organized as follows:
 - **`assets/`** - Contains images and other media files (e.g., `FacebookIcon.png`, `resume_6361827.png`)
 - **`Documentation/`** - Contains all project-related documents (e.g., `Wireframes.zip`, `User_Stories_SD_Project.docx`.)
 
+## Technologies Used
+
+- **Frontend:** HTML, CSS, JavaScript
+- **Backend & Auth:** Firebase
+- **Testing:** Jest
+
+## Getting Started (Local Development)
+
+To run the project locally, make sure you have [Node.js and npm](https://nodejs.org/) installed.
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/freelancer-management-platform.git
+   cd freelancer-management-platform
+2. Install dependencies:
+    ```bash
+    npm install
+3. Start the development server:
+    ```bash
+    npm start
