@@ -150,7 +150,7 @@ export async function showApplicantsModal(jobId, jobTitle) {
     const applicantItem = document.createElement("li");
     applicantItem.className = "applicant";
     applicantItem.innerHTML = `
-      <p>Freelancer: ${app.freelancerId}</p>
+      <p>Freelancer: ${app.freelancerEmail}</p>
       <p>Status: <em class="status-${app.status}">${app.status}</em></p>
       ${
         app.status === "pending"
