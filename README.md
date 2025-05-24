@@ -6,18 +6,19 @@
 A web-based platform that connects businesses with skilled professionals. Clients can post projects and milestones, while freelancers can apply for jobs, track progress, and manage payments—all in one place.
 
 ## Features
-- 🔐 Authentication via Google, GitHub, and other providers (using Firebase)
+- 🔐 Authentication via Google(using Firebase)
 - 🧑‍💼 Clients can post jobs and define milestones
 - 👨‍💻 Freelancers can apply for and manage jobs
-- 💰 Stripe-based simulated payment system for testing transactions
+- 💰 Simulated payment system for testing transactions(No API)
 - 📊 Admin panel to oversee jobs, users, and progress
 - ☁️ Deployed on Azure for public access
+- 🖨️ Export pdf/csv files of payments, milestones and projects.
 
 ## Important Links
-Azure link: https://nice-dune-05fc61f10.6.azurestaticapps.net
-trello link: https://trello.com/b/xzd8Pjdq/freelancer-management-platform
-discord link: https://discord.com/channels/1358878000418001128/1358878437879713842
-our discord server : https://discord.com/channels/1358823396816978020/1358909874880118824
+- Azure link: https://nice-dune-05fc61f10.6.azurestaticapps.net
+- trello link: https://trello.com/b/xzd8Pjdq/freelancer-management-platform
+- discord link: https://discord.com/channels/1358878000418001128/1358878437879713842
+- our discord server : https://discord.com/channels/1358823396816978020/1358909874880118824
 
 ## Project Structure
 The project is organized as follows:
