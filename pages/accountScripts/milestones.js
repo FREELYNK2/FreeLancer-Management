@@ -35,6 +35,14 @@ export async function showMilestonesModal(
 
   const modal = createModal(`Milestones for ${jobTitle}`, modalContent);
 
+  if (!isFreelancerView) {
+    const dateInput = modal.querySelector("#milestoneDueDate");
+    if (dateInput) {
+      const today = new Date();
+      dateInput.min = today.toISOString().split("T")[0];
+    }
+  }
+
   // Add export handlers
   modal
     .querySelector(".export-pdf")
@@ -52,6 +60,24 @@ export async function showMilestonesModal(
         .collection("milestones")
         .orderBy("createdAt", "desc")
         .get();
+
+      const freelancerIds = new Set();
+      query.forEach((doc) => {
+        if (doc.data().freelancerId) {
+          freelancerIds.add(doc.data().freelancerId);
+        }
+      });
+
+      const freelancers = {};
+      await Promise.all(
+        Array.from(freelancerIds).map(async (id) => {
+          const userDoc = await db.collection("users").doc(id).get();
+          if (userDoc.exists) {
+            freelancers[id] =
+              userDoc.data().displayName || "Unknown Freelancer";
+          }
+        })
+      );
       const list = modal.querySelector("#milestonesList");
 
       list.innerHTML = "";
@@ -160,7 +186,7 @@ export async function showMilestonesModal(
           </header>
           
           ${
-            milestone.status === "changes_requested"
+            milestone.status === "changes_requested" && isFreelancerView
               ? `
           <section class="feedback-notice">
             <h5>Client Feedback:</h5>
