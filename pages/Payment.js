@@ -1,0 +1,432 @@
+class PaymentSystem {
+  constructor() {
+    this.transactions = new Map();
+    this.users = new Map();
+    this.disputes = new Map();
+    this.escrowAccounts = new Map();
+    this.nextTransactionId = 1000;
+    this.nextDisputeId = 2000;
+    this.feePercentage = 0.05;
+    this.currency = 'USD';
+    this.systemBalance = 0;
+  }
+
+  registerUser(userId, userType, initialBalance = 0) {
+    if (this.users.has(userId)) {
+      throw new Error('User already registered');
+    }
+
+    this.users.set(userId, {
+      type: userType,
+      balance: initialBalance,
+      paymentMethods: [],
+      transactions: [],
+      rating: userType === 'freelancer' ? 5 : null,
+      completedJobs: 0,
+      totalEarned: 0,
+      totalSpent: 0
+    });
+
+    return this.getUser(userId);
+  }
+
+  getUser(userId) {
+    const user = this.users.get(userId);
+    if (!user) throw new Error('User not found');
+    return { userId, ...user };
+  }
+
+  addPaymentMethod(userId, methodDetails) {
+    const user = this.getUser(userId);
+    const methodId = `pm_${userId}_${user.paymentMethods.length + 1}`;
+
+    if (!methodDetails.type || !['card', 'bank', 'paypal', 'crypto'].includes(methodDetails.type)) {
+      throw new Error('Invalid payment method type');
+    }
+
+    if (methodDetails.type === 'card' && !this.validateCard(methodDetails.cardNumber)) {
+      throw new Error('Invalid card number');
+    }
+
+    const newMethod = {
+      id: methodId,
+      ...methodDetails,
+      isDefault: user.paymentMethods.length === 0
+    };
+
+    user.paymentMethods.push(newMethod);
+    return methodId;
+  }
+
+  validateCard(cardNumber) {
+    const cleaned = cardNumber.replace(/\D/g, '');
+    if (cleaned.length < 13 || cleaned.length > 19) return false;
+
+    let sum = 0;
+    let alternate = false;
+    for (let i = cleaned.length - 1; i >= 0; i--) {
+      let digit = parseInt(cleaned.charAt(i), 10);
+      if (alternate) {
+        digit *= 2;
+        if (digit > 9) {
+          digit = (digit % 10) + 1;
+        }
+      }
+      sum += digit;
+      alternate = !alternate;
+    }
+    return sum % 10 === 0;
+  }
+
+  async deposit(userId, amount, paymentMethodId, currency = this.currency) {
+    if (amount <= 0) throw new Error('Amount must be positive');
+    const user = this.getUser(userId);
+
+    const paymentMethod = user.paymentMethods.find(m => m.id === paymentMethodId);
+    if (!paymentMethod) throw new Error('Payment method not found');
+
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    user.balance += amount;
+    this.recordTransaction({
+      id: this.generateTransactionId(),
+      from: 'external',
+      to: userId,
+      amount,
+      currency,
+      type: 'deposit',
+      status: 'completed',
+      timestamp: new Date()
+    });
+
+    return user.balance;
+  }
+
+  async withdraw(userId, amount, paymentMethodId, currency = this.currency) {
+    if (amount <= 0) throw new Error('Amount must be positive');
+    const user = this.getUser(userId);
+
+    if (user.balance < amount) {
+      throw new Error('Insufficient funds');
+    }
+
+    const paymentMethod = user.paymentMethods.find(m => m.id === paymentMethodId);
+    if (!paymentMethod) throw new Error('Payment method not found');
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    user.balance -= amount;
+    this.recordTransaction({
+      id: this.generateTransactionId(),
+      from: userId,
+      to: 'external',
+      amount,
+      currency,
+      type: 'withdrawal',
+      status: 'completed',
+      timestamp: new Date()
+    });
+
+    return user.balance;
+  }
+
+  async createEscrowPayment(clientId, freelancerId, amount, description, currency = this.currency) {
+    if (amount <= 0) throw new Error('Amount must be positive');
+    const client = this.getUser(clientId);
+    const freelancer = this.getUser(freelancerId);
+
+    if (client.type !== 'client') throw new Error('Sender must be a client');
+    if (freelancer.type !== 'freelancer') throw new Error('Recipient must be a freelancer');
+    if (client.balance < amount) throw new Error('Insufficient funds');
+
+    const fee = this.calculateFee(amount);
+    const totalAmount = amount + fee;
+
+    client.balance -= totalAmount;
+
+    const escrowId = `escrow_${this.generateTransactionId()}`;
+    const transactionId = this.generateTransactionId();
+
+    this.escrowAccounts.set(escrowId, {
+      id: escrowId,
+      clientId,
+      freelancerId,
+      amount,
+      fee,
+      currency,
+      description,
+      status: 'pending',
+      createdAt: new Date(),
+      transactionId
+    });
+
+    this.recordTransaction({
+      id: transactionId,
+      from: clientId,
+      to: escrowId,
+      amount: totalAmount,
+      currency,
+      type: 'escrow',
+      status: 'pending',
+      timestamp: new Date(),
+      description
+    });
+
+    return { escrowId, transactionId };
+  }
+
+  async releaseEscrow(escrowId, releasedBy) {
+    const escrow = this.escrowAccounts.get(escrowId);
+    if (!escrow) throw new Error('Escrow not found');
+    if (escrow.status !== 'pending') throw new Error('Escrow already processed');
+
+    const client = this.getUser(escrow.clientId);
+    const freelancer = this.getUser(escrow.freelancerId);
+
+    escrow.status = 'released';
+    escrow.releasedAt = new Date();
+    escrow.releasedBy = releasedBy;
+
+    freelancer.balance += escrow.amount;
+    freelancer.completedJobs += 1;
+    freelancer.totalEarned += escrow.amount;
+
+    this.systemBalance += escrow.fee;
+
+    const transaction = this.getTransaction(escrow.transactionId);
+    transaction.status = 'completed';
+
+    this.recordTransaction({
+      id: this.generateTransactionId(),
+      from: escrowId,
+      to: freelancer.userId,
+      amount: escrow.amount,
+      currency: escrow.currency,
+      type: 'escrow_release',
+      status: 'completed',
+      timestamp: new Date(),
+      description: escrow.description
+    });
+
+    return { success: true, amount: escrow.amount };
+  }
+
+  async refundEscrow(escrowId, refundedBy, reason) {
+    const escrow = this.escrowAccounts.get(escrowId);
+    if (!escrow) throw new Error('Escrow not found');
+    if (escrow.status !== 'pending') throw new Error('Escrow already processed');
+
+    const client = this.getUser(escrow.clientId);
+
+    escrow.status = 'refunded';
+    escrow.refundedAt = new Date();
+    escrow.refundedBy = refundedBy;
+    escrow.refundReason = reason;
+
+    client.balance += escrow.amount + escrow.fee;
+
+    const transaction = this.getTransaction(escrow.transactionId);
+    transaction.status = 'refunded';
+
+    this.recordTransaction({
+      id: this.generateTransactionId(),
+      from: escrowId,
+      to: client.userId,
+      amount: escrow.amount + escrow.fee,
+      currency: escrow.currency,
+      type: 'escrow_refund',
+      status: 'completed',
+      timestamp: new Date(),
+      description: `Refund: ${escrow.description}`
+    });
+
+    return { success: true, amount: escrow.amount + escrow.fee };
+  }
+
+  async directPayment(clientId, freelancerId, amount, description, currency = this.currency) {
+    if (amount <= 0) throw new Error('Amount must be positive');
+    const client = this.getUser(clientId);
+    const freelancer = this.getUser(freelancerId);
+
+    if (client.type !== 'client') throw new Error('Sender must be a client');
+    if (freelancer.type !== 'freelancer') throw new Error('Recipient must be a freelancer');
+    if (client.balance < amount) throw new Error('Insufficient funds');
+
+    const fee = this.calculateFee(amount);
+    const totalAmount = amount + fee;
+
+    client.balance -= totalAmount;
+    freelancer.balance += amount;
+    this.systemBalance += fee;
+
+    freelancer.completedJobs += 1;
+    freelancer.totalEarned += amount;
+    client.totalSpent += totalAmount;
+
+    const transactionId = this.generateTransactionId();
+
+    this.recordTransaction({
+      id: transactionId,
+      from: clientId,
+      to: freelancerId,
+      amount: amount,
+      fee: fee,
+      currency: currency,
+      type: 'direct',
+      status: 'completed',
+      timestamp: new Date(),
+      description: description
+    });
+
+    return { transactionId, amount, fee };
+  }
+
+  createDispute(escrowId, createdBy, reason) {
+    const escrow = this.escrowAccounts.get(escrowId);
+    if (!escrow) throw new Error('Escrow not found');
+    if (escrow.status !== 'pending') throw new Error('Escrow already processed');
+    if (createdBy !== escrow.clientId && createdBy !== escrow.freelancerId) {
+      throw new Error('Only client or freelancer can create dispute');
+    }
+
+    const disputeId = this.generateDisputeId();
+    this.disputes.set(disputeId, {
+      id: disputeId,
+      escrowId,
+      createdBy,
+      reason,
+      status: 'open',
+      createdAt: new Date(),
+      resolvedAt: null,
+      resolution: null
+    });
+
+    escrow.status = 'disputed';
+    return disputeId;
+  }
+
+  resolveDispute(disputeId, resolvedBy, resolution, amountToFreelancer) {
+    const dispute = this.disputes.get(disputeId);
+    if (!dispute) throw new Error('Dispute not found');
+    if (dispute.status !== 'open') throw new Error('Dispute already resolved');
+
+    const escrow = this.escrowAccounts.get(dispute.escrowId);
+    if (!escrow) throw new Error('Escrow not found');
+
+    const client = this.getUser(escrow.clientId);
+    const freelancer = this.getUser(escrow.freelancerId);
+
+    if (amountToFreelancer < 0 || amountToFreelancer > escrow.amount) {
+      throw new Error('Invalid resolution amount');
+    }
+
+    dispute.status = 'resolved';
+    dispute.resolvedAt = new Date();
+    dispute.resolvedBy = resolvedBy;
+    dispute.resolution = resolution;
+    dispute.amountToFreelancer = amountToFreelancer;
+
+    if (amountToFreelancer > 0) {
+      freelancer.balance += amountToFreelancer;
+      freelancer.completedJobs += 1;
+      freelancer.totalEarned += amountToFreelancer;
+    }
+
+    const refundAmount = escrow.amount - amountToFreelancer;
+    if (refundAmount > 0) {
+      client.balance += refundAmount;
+    }
+
+    this.systemBalance += escrow.fee;
+
+    escrow.status = 'dispute_resolved';
+
+    if (amountToFreelancer > 0) {
+      this.recordTransaction({
+        id: this.generateTransactionId(),
+        from: dispute.escrowId,
+        to: freelancer.userId,
+        amount: amountToFreelancer,
+        currency: escrow.currency,
+        type: 'dispute_resolution',
+        status: 'completed',
+        timestamp: new Date(),
+        description: `Dispute resolution: ${resolution}`
+      });
+    }
+
+    if (refundAmount > 0) {
+      this.recordTransaction({
+        id: this.generateTransactionId(),
+        from: dispute.escrowId,
+        to: client.userId,
+        amount: refundAmount,
+        currency: escrow.currency,
+        type: 'dispute_refund',
+        status: 'completed',
+        timestamp: new Date(),
+        description: `Dispute refund: ${resolution}`
+      });
+    }
+
+    return { success: true, amountToFreelancer, refundAmount };
+  }
+
+  getTransaction(transactionId) {
+    for (const [_, user] of this.users) {
+      const transaction = user.transactions.find(t => t.id === transactionId);
+      if (transaction) return transaction;
+    }
+    
+    if (this.transactions.has(transactionId)) {
+      return this.transactions.get(transactionId);
+    }
+    
+    throw new Error('Transaction not found');
+  }
+
+  getUserTransactions(userId) {
+    const user = this.getUser(userId);
+    return user.transactions;
+  }
+
+  getEscrowDetails(escrowId) {
+    const escrow = this.escrowAccounts.get(escrowId);
+    if (!escrow) throw new Error('Escrow not found');
+    return escrow;
+  }
+
+  getDisputeDetails(disputeId) {
+    const dispute = this.disputes.get(disputeId);
+    if (!dispute) throw new Error('Dispute not found');
+    return dispute;
+  }
+
+  generateTransactionId() {
+    return `tx_${this.nextTransactionId++}`;
+  }
+
+  generateDisputeId() {
+    return `dp_${this.nextDisputeId++}`;
+  }
+
+  calculateFee(amount) {
+    return Math.round(amount * this.feePercentage * 100) / 100;
+  }
+
+  recordTransaction(transaction) {
+    if (transaction.from !== 'external' && transaction.from !== 'system') {
+      const sender = this.getUser(transaction.from);
+      sender.transactions.push(transaction);
+    }
+
+    if (transaction.to !== 'external' && transaction.to !== 'system') {
+      const receiver = this.getUser(transaction.to);
+      receiver.transactions.push(transaction);
+    }
+
+    this.transactions.set(transaction.id, transaction);
+  }
+}
+
+module.exports = PaymentSystem;
