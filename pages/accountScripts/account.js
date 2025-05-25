@@ -10,15 +10,15 @@ import {
 import { setupTabs } from "../accountScripts/ui.js";
 
 import { 
-  showPaymentsHistory // Import separately from payments.js
+  showPaymentsHistory 
 } from "../accountScripts/payments.js";
 
 
-console.log("[Debug] Script loaded"); // Verify script is loading
-console.log("[Debug] Button exists:", !!document.getElementById("viewPayments")); // Check if button exists
+console.log("[Debug] Script loaded");
+console.log("[Debug] Button exists:", !!document.getElementById("viewPayments")); 
 
 document.getElementById("viewPayments")?.addEventListener("click", async (e) => {
-  console.log("[Debug] Button clicked"); // Confirm click is registered
+  console.log("[Debug] Button clicked"); 
   e.preventDefault();
   
   try {
@@ -61,7 +61,7 @@ async function exportActivitiesToPDF() {
     // Create PDF
     const doc = new jsPDF();
 
-    // Add header
+
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
     doc.setTextColor(40, 40, 40);
@@ -147,8 +147,6 @@ async function exportActivitiesToPDF() {
 }
 
 // Helper function to fetch activities
-// In your fetchUserActivities function, replace the timestamp handling with this:
-
 async function fetchUserActivities() {
   const user = firebase.auth().currentUser;
   if (!user) return [];
