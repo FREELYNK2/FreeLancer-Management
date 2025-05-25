@@ -1,5 +1,3 @@
-
-
 class MilestoneTracker {
   constructor() {
     this.projects = new Map();       
@@ -14,7 +12,7 @@ class MilestoneTracker {
       throw new Error('Freelancer already registered');
     }
 
-    this.freelancers.set(freelancerId, {
+    this.freelancers.set(freelancerId, {     /// Create new freelancer record
       name,
       skills,
       completedProjects: 0,
@@ -260,18 +258,18 @@ class MilestoneTracker {
     let totalMilestones = 0;
     let completedMilestones = 0;
 
-    this.projects.forEach(project => {
+    this.projects.forEach(project => {    // Count projects
       totalProjects++;
       if (project.status === 'completed') completedProjects++;
     });
 
-    this.freelancers.forEach(freelancer => {
+    this.freelancers.forEach(freelancer => {           // Count freelancer metrics
       if (freelancer.activeProjects > 0) activeFreelancers++;
       totalMilestones += freelancer.milestonesCompleted;
       completedMilestones += freelancer.milestonesCompleted;
     });
 
-    return {
+    return {      // Return compiled statistics
       totalProjects,
       completedProjects,
       activeFreelancers,
