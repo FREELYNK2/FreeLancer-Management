@@ -18,12 +18,12 @@ export async function exportMilestonesPDF(jobId, jobTitle) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // Add header
+    // header
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
     doc.text(`Milestones Report: ${jobTitle}`, 105, 20, { align: "center" });
 
-    // Add metadata
+    // metadata
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 30);
@@ -42,7 +42,7 @@ export async function exportMilestonesPDF(jobId, jobTitle) {
         "No feedback provided",
     ]);
 
-    // Add table
+    // table
     doc.autoTable({
       head: headers,
       body: data,
@@ -124,7 +124,6 @@ export async function exportPaymentsPDF(
   userName = "User"
 ) {
   try {
-    // Check if jsPDF is available
     if (!window.jspdf) {
       throw new Error(
         "PDF library not loaded. Please wait a moment and try again."
@@ -134,12 +133,12 @@ export async function exportPaymentsPDF(
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // Add header
+    // header
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
     doc.text(title, 105, 20, { align: "center" });
 
-    // Add metadata
+    // metadata
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 30);
@@ -172,13 +171,12 @@ export async function exportPaymentsPDF(
       head: headers,
       body: data,
       startY: 40,
-      // ... rest of autoTable configuration
     });
 
     doc.save(`Payments_${new Date().toISOString().slice(0, 10)}.pdf`);
   } catch (error) {
     console.error("PDF export failed:", error);
-    throw error; // Re-throw to handle in the calling function
+    throw error; 
   }
 }
 export async function exportPaymentsCSV(payments, title = "Payment History") {
