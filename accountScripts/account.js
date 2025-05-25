@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // PDF Export Function
 async function exportActivitiesToPDF() {
   try {
-    // Show loading state
+
     const btn = document.getElementById("export-pdf");
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
@@ -49,13 +49,13 @@ async function exportActivitiesToPDF() {
     // Create PDF
     const doc = new jsPDF();
 
-    // Add header
+    // header
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
     doc.setTextColor(40, 40, 40);
     doc.text("Freelynk Activity Report", 105, 20, { align: "center" });
 
-    // Add metadata
+    // metadata
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
@@ -135,7 +135,6 @@ async function exportActivitiesToPDF() {
 }
 
 // Helper function to fetch activities
-// In your fetchUserActivities function, replace the timestamp handling with this:
 
 async function fetchUserActivities() {
   const user = firebase.auth().currentUser;
@@ -192,11 +191,11 @@ async function fetchUserActivities() {
 // Status color mapping
 function getStatusColor(status) {
   const statusColors = {
-    pending: [237, 137, 54], // orange
-    approved: [56, 161, 105], // green
-    rejected: [229, 62, 62], // red
-    submitted: [66, 153, 225], // blue
-    open: [100, 100, 100], // gray
+    pending: [237, 137, 54],
+    approved: [56, 161, 105], 
+    rejected: [229, 62, 62],
+    submitted: [66, 153, 225], 
+    open: [100, 100, 100], 
   };
   return statusColors[status.toLowerCase()] || [0, 0, 0];
 }
