@@ -31,10 +31,10 @@ const state = {
 
 // Initialize application
 const initApp = () => {
-  // First check if user is already logged in
+  // check if user is already logged in
   state.currentUser = getCurrentUser();
 
-  // Set up auth state listener
+  // auth state listener
   initAuthStateListener((user) => {
     state.currentUser = user;
     if (user) {
@@ -64,7 +64,7 @@ const loadInitialData = async () => {
   }
 };
 
-// Setup search handlers
+// search handlers
 const setupSearchHandlers = () => {
   // Global search
   elements.globalSearchBtn?.addEventListener("click", handleGlobalSearch);
