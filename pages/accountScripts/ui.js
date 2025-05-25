@@ -64,7 +64,7 @@ export function createModal(title, contentHTML) {
       <button class="close-modal">Close</button>
     `;
 
-  // Add close handler
+  //  close handler
   modal.querySelector(".close-modal").addEventListener("click", () => {
     document.body.removeChild(modal);
   });
