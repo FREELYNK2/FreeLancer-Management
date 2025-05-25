@@ -104,7 +104,7 @@ export async function loadPostedJobs(userId) {
           }">${job.status || "open"}</em></p>
         `;
 
-        // Change this condition to check for "approved" status
+        //  check for "approved" status
         if (job.status === "approved") {
           const milestonesBtn = document.createElement("button");
           milestonesBtn.className = "manage-milestones";

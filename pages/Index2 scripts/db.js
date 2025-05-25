@@ -16,7 +16,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
-// import { sendApplicationEmail } from "./notifications.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCsf_gbE_xyqRoilwzgdDtEdGIpEDydntU",
@@ -147,7 +146,6 @@ const loadMilestones = async (jobId, modalElement) => {
     .join("");
 };
 
-// Single export at the end (no duplicate exports)
 export {
   saveFreelancerProfile,
   loadFreelancers,

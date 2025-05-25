@@ -43,7 +43,7 @@ export async function showPaymentsHistory() {
      </section>`
   );
 
-  // Load payments - simplified without role checks
+  // Load payments
   const paymentsQuery = await db
     .collection("payments")
     .where("freelancerId", "==", user.uid)
@@ -76,7 +76,6 @@ export async function showPaymentsHistory() {
     .querySelector("#export-payments-pdf")
     .addEventListener("click", async () => {
       try {
-        // Re-fetch payments to ensure we have fresh data
         const paymentsQuery = await db
           .collection("payments")
           .where("freelancerId", "==", user.uid)
@@ -99,7 +98,6 @@ export async function showPaymentsHistory() {
     .querySelector("#export-payments-csv")
     .addEventListener("click", async () => {
       try {
-        // Re-fetch payments to ensure we have fresh data
         const paymentsQuery = await db
           .collection("payments")
           .where("freelancerId", "==", user.uid)

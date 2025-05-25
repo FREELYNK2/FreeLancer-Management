@@ -59,10 +59,9 @@ export async function showPaymentsHistory() {
       .orderBy("paymentDate", "desc")
       .get();
 
-    // Wait for both queries to complete
     const [receivedSnap, sentSnap] = await Promise.all([receivedPayments, sentPayments]);
     
-    // Combine and sort all payments by date
+    
     const allPayments = [
       ...receivedSnap.docs.map(doc => ({ ...doc.data(), id: doc.id, type: 'received' })),
       ...sentSnap.docs.map(doc => ({ ...doc.data(), id: doc.id, type: 'sent' }))
@@ -88,7 +87,7 @@ export async function showPaymentsHistory() {
       });
     }
 
-    // Update export handlers to use allPayments
+    // export handlers to use allPayments
     modal.querySelector("#export-payments-pdf").addEventListener("click", async () => {
       try {
         await exportPaymentsPDF(allPayments, "My Payment History");
@@ -107,7 +106,6 @@ export async function showPaymentsHistory() {
       }
     });
 
-    // Rest of your existing modal code (print, view receipt, etc.)...
     modal.querySelector("#printPayments").addEventListener("click", () => {
       const printContent = `
         <!DOCTYPE html>

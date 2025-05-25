@@ -53,5 +53,5 @@ export {
   getCurrentUser,
   login,
   logout,
-  auth, // Export auth instance if needed elsewhere
+  auth, 
 };

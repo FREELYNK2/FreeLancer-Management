@@ -35,7 +35,7 @@ export async function showMilestonesModal(
 
   const modal = createModal(`Milestones for ${jobTitle}`, modalContent);
 
-  // Add export handlers
+  // export handlers
   modal
     .querySelector(".export-pdf")
     ?.addEventListener("click", () => exportMilestonesPDF(jobId, jobTitle));
@@ -139,7 +139,7 @@ export async function showMilestonesModal(
           }
         }
 
-        // Add payment button for approved milestones
+        //payment button for approved milestones
         if (milestone.status === "Approved And Paid") {
           paymentButton = `
             <button class="view-payment" data-job-id="${jobId}" data-milestone-id="${doc.id}">
@@ -217,7 +217,7 @@ export async function showMilestonesModal(
           });
         }
 
-        // Handle work submission button
+        // work submission button
         const submitBtn = item.querySelector(".submit-work");
         if (submitBtn) {
           submitBtn.addEventListener("click", () => {
@@ -225,7 +225,7 @@ export async function showMilestonesModal(
           });
         }
 
-        // Handle payment view button
+        // payment view button
         const paymentBtn = item.querySelector(".view-payment");
         if (paymentBtn) {
           paymentBtn.addEventListener("click", () => {
@@ -243,7 +243,7 @@ export async function showMilestonesModal(
     }
   };
 
-  // Handle form submission (client view only)
+  // form submission (client view only)
   if (!isFreelancerView) {
     modal
       .querySelector("#addMilestoneForm")
@@ -268,7 +268,7 @@ export async function showMilestonesModal(
             throw new Error("Please fill all fields with valid values");
           }
 
-          // Create complete milestone data
+          // Create milestone data
           const milestoneData = {
             name: name,
             dueDate: dueDate,
@@ -297,7 +297,7 @@ export async function showMilestonesModal(
       });
   }
 
-  // Handle approval/rejection with feedback
+  //approval/rejection with feedback
   modal.addEventListener("click", async (e) => {
     // Replace the approval handler with this version
     if (e.target.classList.contains("approve-btn")) {
@@ -323,11 +323,9 @@ export async function showMilestonesModal(
         const milestoneDoc = await milestoneRef.get();
         const milestone = milestoneDoc.data();
 
-        // Get freelancerId either from milestone or application
         let freelancerId = milestone.freelancerId;
 
         if (!freelancerId) {
-          // Fallback to getting from application if not in milestone
           const applicationsQuery = await db
             .collection("applications")
             .where("jobId", "==", e.target.dataset.jobId)
@@ -507,7 +505,7 @@ export async function showSubmissionForm(jobId, milestoneId) {
     </form>`
   );
 
-  // Handle file selection display
+  //file selection display
   const fileInput = formModal.querySelector("#fileUpload");
   const fileListOutput = formModal.querySelector("#fileList");
 
@@ -529,14 +527,13 @@ export async function showSubmissionForm(jobId, milestoneId) {
     }
   });
 
-  // Handle form submission
+  //form submission
   formModal.querySelector("form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const description = formModal.querySelector("#workDescription").value;
     const files = fileInput.files;
 
     try {
-      // Show loading state
       const submitBtn = formModal.querySelector("button[type='submit']");
       submitBtn.disabled = true;
       submitBtn.textContent = "Uploading...";

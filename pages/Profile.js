@@ -1,146 +1,108 @@
-// account.js - Profile Management Module
-
-/**
- * User Profile Class
- */
 class UserProfile {
   constructor(userId, username, email, firstName, lastName) {
-    this.userId = userId;
-    this.username = username;
-    this.email = email;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.profilePicture = null;
-    this.bio = '';
-    this.website = '';
-    this.location = '';
-    this.joinDate = new Date();
-    this.lastLogin = new Date();
-    this.isVerified = false;
-    this.isPrivate = false;
-    this.followers = [];
-    this.following = [];
-    this.socialLinks = {};
-    this.preferences = {
-      theme: 'light',
-      notifications: true,
-      language: 'en'
+    this.userId = userId; // Unique user identifier
+    this.username = username; // User's display name
+    this.email = email; // User's email address
+    this.firstName = firstName; // User's first name
+    this.lastName = lastName; // User's last name
+    this.profilePicture = null; // URL to profile image
+    this.bio = ''; // User description
+    this.website = ''; // Personal website URL
+    this.location = ''; // Physical location
+    this.joinDate = new Date(); // Account creation timestamp
+    this.lastLogin = new Date(); // Last active timestamp
+    this.isVerified = false; // Account verification status
+    this.isPrivate = false; // Profile visibility flag
+    this.followers = []; // Array of follower user IDs
+    this.following = []; // Array of followed user IDs
+    this.socialLinks = {}; // Key-value pairs of social media links
+    this.preferences = { // User settings
+      theme: 'light', // UI theme preference
+      notifications: true, // Notification toggle
+      language: 'en' // Language preference
     };
   }
 
-  /**
-   * Update basic profile information
-   */
   updateProfileInfo({ firstName, lastName, bio, website, location }) {
-    if (firstName !== undefined) this.firstName = firstName;
-    if (lastName !== undefined) this.lastName = lastName;
-    if (bio !== undefined) this.bio = bio;
-    if (website !== undefined) this.website = website;
-    if (location !== undefined) this.location = location;
-    return this;
+    if (firstName !== undefined) this.firstName = firstName; // Update first name if provided
+    if (lastName !== undefined) this.lastName = lastName; // Update last name if provided
+    if (bio !== undefined) this.bio = bio; // Update bio if provided
+    if (website !== undefined) this.website = website; // Update website if provided
+    if (location !== undefined) this.location = location; // Update location if provided
+    return this; // Return instance for chaining
   }
 
-  /**
-   * Update profile picture
-   */
   updateProfilePicture(url) {
-    if (typeof url !== 'string' || !url.match(/\.(jpeg|jpg|gif|png)$/)) {
+    if (typeof url !== 'string' || !url.match(/\.(jpeg|jpg|gif|png)$/)) { // Validate image URL format
       throw new Error('Invalid image URL');
     }
-    this.profilePicture = url;
-    return this;
+    this.profilePicture = url; // Set new profile picture URL
+    return this; // Return instance for chaining
   }
 
-  /**
-   * Update user preferences
-   */
   updatePreferences({ theme, notifications, language }) {
-    if (theme && ['light', 'dark', 'system'].includes(theme)) {
-      this.preferences.theme = theme;
+    if (theme && ['light', 'dark', 'system'].includes(theme)) { // Validate theme value
+      this.preferences.theme = theme; // Update theme preference
     }
-    if (notifications !== undefined) {
-      this.preferences.notifications = Boolean(notifications);
+    if (notifications !== undefined) { // Check if notifications value exists
+      this.preferences.notifications = Boolean(notifications); // Convert to boolean
     }
-    if (language && ['en', 'es', 'fr', 'de'].includes(language)) {
-      this.preferences.language = language;
+    if (language && ['en', 'es', 'fr', 'de'].includes(language)) { // Validate language value
+      this.preferences.language = language; // Update language preference
     }
-    return this;
+    return this; // Return instance for chaining
   }
 
-  /**
-   * Add a social link
-   */
   addSocialLink(platform, url) {
-    const validPlatforms = ['twitter', 'facebook', 'instagram', 'linkedin', 'github'];
-    if (!validPlatforms.includes(platform)) {
+    const validPlatforms = ['twitter', 'facebook', 'instagram', 'linkedin', 'github']; // Allowed platforms
+    if (!validPlatforms.includes(platform)) { // Check platform validity
       throw new Error('Invalid social platform');
     }
-    if (typeof url !== 'string' || !url.startsWith('http')) {
+    if (typeof url !== 'string' || !url.startsWith('http')) { // Validate URL format
       throw new Error('Invalid URL');
     }
-    this.socialLinks[platform] = url;
-    return this;
+    this.socialLinks[platform] = url; // Add social link to object
+    return this; // Return instance for chaining
   }
 
-  /**
-   * Remove a social link
-   */
   removeSocialLink(platform) {
-    if (this.socialLinks[platform]) {
-      delete this.socialLinks[platform];
+    if (this.socialLinks[platform]) { // Check if platform exists
+      delete this.socialLinks[platform]; // Remove social link
     }
-    return this;
+    return this; // Return instance for chaining
   }
 
-  /**
-   * Toggle account privacy
-   */
   togglePrivacy() {
-    this.isPrivate = !this.isPrivate;
-    return this;
+    this.isPrivate = !this.isPrivate; // Flip privacy setting
+    return this; // Return instance for chaining
   }
 
-  /**
-   * Follow another user
-   */
   followUser(userId) {
-    if (!this.following.includes(userId)) {
-      this.following.push(userId);
+    if (!this.following.includes(userId)) { // Check if not already following
+      this.following.push(userId); // Add to following list
     }
-    return this;
+    return this; // Return instance for chaining
   }
 
-  /**
-   * Unfollow a user
-   */
   unfollowUser(userId) {
-    this.following = this.following.filter(id => id !== userId);
-    return this;
+    this.following = this.following.filter(id => id !== userId); // Remove from following list
+    return this; // Return instance for chaining
   }
 
-  /**
-   * Add a follower
-   */
   addFollower(userId) {
-    if (!this.followers.includes(userId)) {
-      this.followers.push(userId);
+    if (!this.followers.includes(userId)) { // Check if not already a follower
+      this.followers.push(userId); // Add to followers list
     }
-    return this;
+    return this; // Return instance for chaining
   }
 
-  /**
-   * Remove a follower
-   */
   removeFollower(userId) {
-    this.followers = this.followers.filter(id => id !== userId);
-    return this;
+    this.followers = this.followers.filter(id => id !== userId); // Remove from followers list
+    return this; // Return instance for chaining
   }
 
-  /**
-   * Get profile data for public view
-   */
   getPublicProfile() {
-    return {
+    return { // Return public-safe profile data
       username: this.username,
       firstName: this.firstName,
       lastName: this.lastName,
@@ -157,11 +119,8 @@ class UserProfile {
     };
   }
 
-  /**
-   * Get full profile data (for private/owner view)
-   */
   getFullProfile() {
-    return {
+    return { // Return complete profile data
       userId: this.userId,
       username: this.username,
       email: this.email,
@@ -183,118 +142,90 @@ class UserProfile {
   }
 }
 
-/**
- * Profile Manager - Manages multiple user profiles
- */
 class ProfileManager {
   constructor() {
-    this.profiles = new Map();
-    this.usernameIndex = new Map();
-    this.emailIndex = new Map();
+    this.profiles = new Map(); // UserID-to-Profile map
+    this.usernameIndex = new Map(); // Username-to-UserID map
+    this.emailIndex = new Map(); // Email-to-UserID map
   }
 
-  /**
-   * Create a new user profile
-   */
   createProfile(userId, username, email, firstName, lastName) {
-    if (this.profiles.has(userId)) {
+    if (this.profiles.has(userId)) { // Check for existing user ID
       throw new Error('User ID already exists');
     }
-    if (this.usernameIndex.has(username)) {
+    if (this.usernameIndex.has(username)) { // Check for existing username
       throw new Error('Username already taken');
     }
-    if (this.emailIndex.has(email)) {
+    if (this.emailIndex.has(email)) { // Check for existing email
       throw new Error('Email already registered');
     }
 
-    const profile = new UserProfile(userId, username, email, firstName, lastName);
-    this.profiles.set(userId, profile);
-    this.usernameIndex.set(username, userId);
-    this.emailIndex.set(email, userId);
-    return profile;
+    const profile = new UserProfile(userId, username, email, firstName, lastName); // Create new profile
+    this.profiles.set(userId, profile); // Add to profiles map
+    this.usernameIndex.set(username, userId); // Add to username index
+    this.emailIndex.set(email, userId); // Add to email index
+    return profile; // Return new profile
   }
 
-  /**
-   * Get profile by user ID
-   */
   getProfileById(userId) {
-    return this.profiles.get(userId);
+    return this.profiles.get(userId); // Retrieve profile by ID
   }
 
-  /**
-   * Get profile by username
-   */
   getProfileByUsername(username) {
-    const userId = this.usernameIndex.get(username);
-    return userId ? this.profiles.get(userId) : null;
+    const userId = this.usernameIndex.get(username); // Find ID from username
+    return userId ? this.profiles.get(userId) : null; // Return profile if found
   }
 
-  /**
-   * Get profile by email
-   */
   getProfileByEmail(email) {
-    const userId = this.emailIndex.get(email);
-    return userId ? this.profiles.get(userId) : null;
+    const userId = this.emailIndex.get(email); // Find ID from email
+    return userId ? this.profiles.get(userId) : null; // Return profile if found
   }
 
-  /**
-   * Delete a profile
-   */
   deleteProfile(userId) {
-    const profile = this.profiles.get(userId);
+    const profile = this.profiles.get(userId); // Get profile to delete
     if (profile) {
-      this.usernameIndex.delete(profile.username);
-      this.emailIndex.delete(profile.email);
-      this.profiles.delete(userId);
-      return true;
+      this.usernameIndex.delete(profile.username); // Remove from username index
+      this.emailIndex.delete(profile.email); // Remove from email index
+      this.profiles.delete(userId); // Remove from profiles map
+      return true; // Return success
     }
-    return false;
+    return false; // Return failure
   }
 
-  /**
-   * Search profiles by name or username
-   */
   searchProfiles(query) {
-    const results = [];
-    const queryLower = query.toLowerCase();
+    const results = []; // Array for search results
+    const queryLower = query.toLowerCase(); // Case-insensitive query
     
-    for (const [userId, profile] of this.profiles) {
-      const fullName = `${profile.firstName} ${profile.lastName}`.toLowerCase();
+    for (const [userId, profile] of this.profiles) { // Iterate all profiles
+      const fullName = `${profile.firstName} ${profile.lastName}`.toLowerCase(); // Create full name
       if (
-        profile.username.toLowerCase().includes(queryLower) ||
-        fullName.includes(queryLower)
+        profile.username.toLowerCase().includes(queryLower) || // Check username match
+        fullName.includes(queryLower) // Check name match
       ) {
-        results.push(profile.getPublicProfile());
+        results.push(profile.getPublicProfile()); // Add public profile to results
       }
     }
     
-    return results;
+    return results; // Return matching profiles
   }
 
-  /**
-   * Verify a user's email
-   */
   verifyUser(userId) {
-    const profile = this.profiles.get(userId);
+    const profile = this.profiles.get(userId); // Get user profile
     if (profile) {
-      profile.isVerified = true;
-      return true;
+      profile.isVerified = true; // Set verification flag
+      return true; // Return success
     }
-    return false;
+    return false; // Return failure
   }
 
-  /**
-   * Update last login time
-   */
   updateLastLogin(userId) {
-    const profile = this.profiles.get(userId);
+    const profile = this.profiles.get(userId); // Get user profile
     if (profile) {
-      profile.lastLogin = new Date();
-      return true;
+      profile.lastLogin = new Date(); // Update last login timestamp
+      return true; // Return success
     }
-    return false;
+    return false; // Return failure
   }
 }
 
-// Export the ProfileManager class
-module.exports = { UserProfile, ProfileManager };
+module.exports = { UserProfile, ProfileManager }; // Export both classes
