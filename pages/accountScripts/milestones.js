@@ -97,7 +97,7 @@ export async function showMilestonesModal(
         let feedbackHtml = "";
         let paymentButton = "";
 
-        // Show feedback if available
+        // Show feedback 
         if (milestone.clientFeedback || milestone.rejectionReason) {
           feedbackHtml = `
             <article class="feedback-details">
@@ -165,7 +165,7 @@ export async function showMilestonesModal(
           }
         }
 
-        // Add payment button for approved milestones
+        // payment button for approved milestones
         if (milestone.status === "Approved And Paid") {
           paymentButton = `
             <button class="view-payment" data-job-id="${jobId}" data-milestone-id="${doc.id}">
