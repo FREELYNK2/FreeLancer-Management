@@ -18,7 +18,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Initialize auth state listener
+// Initializing auth state listener
 const initAuthStateListener = (callback) => {
   onAuthStateChanged(auth, (user) => {
     if (callback) callback(user);
