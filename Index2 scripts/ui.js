@@ -20,7 +20,6 @@ export const elements = {
     "createFreelancerProfileBtn"
   ),
 
-  // Add these to the elements object in ui.js
   jobBudgetFilter: document.getElementById("jobBudgetFilter"),
   jobDurationFilter: document.getElementById("jobDurationFilter"),
   freelancerRateFilter: document.getElementById("freelancerRateFilter"),
@@ -49,7 +48,6 @@ export const elements = {
   photoPreview: document.getElementById("photoPreview"),
 };
 
-// View Management
 export const showView = (viewName) => {
   elements.homeView.classList.add("hidden");
   elements.freelancerView.classList.add("hidden");
@@ -57,7 +55,6 @@ export const showView = (viewName) => {
 
   elements[`${viewName}View`].classList.remove("hidden");
 
-  // Update active nav button
   document.querySelectorAll(".nav-btn").forEach((btn) => {
     btn.classList.toggle("active", btn.id === `${viewName}Btn`);
   });
