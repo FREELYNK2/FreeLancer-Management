@@ -7,7 +7,7 @@ import {
 import { showView, showSection, showLoading } from "../Index2 scripts/ui.js";
 
 const initEventListeners = () => {
-  // Verify essential elements exist
+ 
   if (!elements.homeBtn || !elements.freelancerBtn || !elements.clientBtn) {
     console.error("Critical navigation elements missing");
     return;
@@ -109,7 +109,6 @@ const initEventListeners = () => {
     }
   });
 
-  // Dynamic event delegation
   elements.jobsContainer.addEventListener("click", async (e) => {
     if (e.target.classList.contains("apply-btn")) {
       const jobCard = e.target.closest(".job-card");
@@ -126,7 +125,6 @@ const initEventListeners = () => {
     }
   });
 
-  // Add to events.js
   elements.jobSearchForm?.addEventListener("submit", (e) => {
     e.preventDefault();
     const searchTerm = elements.jobSearchInput.value;
