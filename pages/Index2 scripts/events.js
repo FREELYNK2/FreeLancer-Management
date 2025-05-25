@@ -130,7 +130,6 @@ const initEventListeners = () => {
     }
   });
 
-  // Add to events.js
   elements.jobSearchForm?.addEventListener("submit", (e) => {
     e.preventDefault();
     const searchTerm = elements.jobSearchInput.value;
