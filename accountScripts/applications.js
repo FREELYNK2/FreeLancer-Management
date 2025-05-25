@@ -104,7 +104,7 @@ export async function loadPostedJobs(userId) {
           }">${job.status || "open"}</em></p>
         `;
 
-        // Change this condition to check for "approved" status
+        // check for "approved" status
         if (job.status === "approved") {
           const milestonesBtn = document.createElement("button");
           milestonesBtn.className = "manage-milestones";
@@ -177,7 +177,7 @@ export async function showApplicantsModal(jobId, jobTitle) {
 
       // Refresh modal and page
       showApplicantsModal(jobId, jobTitle);
-      location.reload(); // Refresh to show the new "Manage Milestones" button
+      location.reload();
     } else if (e.target.classList.contains("reject-btn")) {
       await updateApplicationStatus(e.target.dataset.appId, "rejected");
       showApplicantsModal(jobId, jobTitle);
