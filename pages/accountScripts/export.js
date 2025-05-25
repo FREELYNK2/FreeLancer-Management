@@ -172,13 +172,13 @@ export async function exportPaymentsPDF(
       head: headers,
       body: data,
       startY: 40,
-      // ... rest of autoTable configuration
+    
     });
 
     doc.save(`Payments_${new Date().toISOString().slice(0, 10)}.pdf`);
   } catch (error) {
     console.error("PDF export failed:", error);
-    throw error; // Re-throw to handle in the calling function
+    throw error;
   }
 }
 export async function exportPaymentsCSV(payments, title = "Payment History") {
