@@ -57,5 +57,5 @@ export const searchFreelancers = (freelancers, searchTerm, filters = {}) => {
 };
 
 export const setupSearchHandlers = () => {
-  // This is now in main.js
+
 };
