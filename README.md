@@ -6,12 +6,12 @@
 A web-based platform that connects businesses with skilled professionals. Clients can post projects and milestones, while freelancers can apply for jobs, track progress, and manage payments—all in one place.
 
 ## Features
-- 🔐 Authentication via Google(using Firebase)
-- 🧑‍💼 Clients can post jobs and define milestones
-- 👨‍💻 Freelancers can apply for and manage jobs
-- 💰 Simulated payment system for testing transactions(No API)
-- 📊 Admin panel to oversee jobs, users, and progress
-- ☁️ Deployed on Azure for public access
+- 🔐 Authentication via Google(using Firebase).
+- 🧑‍💼 Clients can post jobs and define milestones.
+- 👨‍💻 Freelancers can apply for and manage jobs as well as post.
+- 💰 Simulated payment system for testing transactions(No API).
+- 📊 Admin panel to oversee jobs, users, and progress.
+- ☁️ Deployed on Azure for public access.
 - 🖨️ Export pdf/csv files of payments, milestones and projects.
 
 ## Important Links
